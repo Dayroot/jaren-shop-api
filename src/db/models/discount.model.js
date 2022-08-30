@@ -5,9 +5,20 @@ const Discount = conn.define('Discount', {
 	value: {
 		type: DataTypes.FLOAT,
 		allowNull: false,
-		validate : {
+		validate: {
 			isNumeric: true,
 		}
+	},
+	finishDate: {
+		type: DataTypes.DATE,
+		allowNull: false,
+		validate: {
+			isDate: true,
+		}
+	},
+	isEnabled: {
+		type: DataTypes.BOOLEAN,
+		defaultValue: true,
 	}
 });
 
