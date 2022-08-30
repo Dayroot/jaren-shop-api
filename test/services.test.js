@@ -11,11 +11,12 @@ const conn = require('../src/db/connectionDB');
 
 //Models
 const BrandModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'brand.model.js'));
+const DiscountModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'discount.model.js'));
 
 //Services
 const BrandService = require(path.resolve(process.cwd(), 'src', 'services', 'brand.service.js'));
 const ProductService = require(path.resolve(process.cwd(), 'src', 'services', 'product.service.js'));
-
+const DiscountService = require(path.resolve(process.cwd(), 'src', 'services', 'discount.service.js'));
 
 
 const productsData = [
@@ -53,6 +54,25 @@ const productsData = [
 		pricesPerSize: [{size:'80', price: 1199.99}, {size:'100', price: 1999.99}, {size:'200', price: 3400.00}],
 	}
 ];
+
+const discountsData = [
+	{
+		value: 30,
+		finishDate: "2022-09-02T16:17:01.559Z",
+		isEnabled: true,
+	},
+	{
+		value: 40,
+		finishDate: "2022-09-02T16:17:01.559Z",
+		isEnabled: true,
+	},
+	{
+		value: 60,
+		finishDate: "2022-09-02T16:17:01.559Z",
+		isEnabled: true,
+	}
+];
+
 
 let service;
 describe('Services testing', () => {
@@ -96,16 +116,17 @@ describe('Services testing', () => {
 			}
 		);
 
-		it('The findOne method must return the brand with the indicated name',
+		it('The findOne method must return the brand with the indicated id',
 			async () => {
 				const brandCreated = await service.add(...Object.values(productsData[0].brand));
-				const brandFinded = await service.findOne(brandCreated.name);
+				const brandFinded = await service.findOne(brandCreated.id);
 				expect( brandFinded instanceof BrandModel).toBeTruthy();
+				expect(brandFinded.id).toEqual(brandCreated.id);
 				expect(brandFinded.name).toEqual(brandCreated.name);
 			}
 		);
 
-		it('The findOrCreate method must return the mark with the indicated name or create it if it does not exist',
+		it('The findOrCreate method must return the brand with the indicated name or create it if it does not exist',
 			async () => {
 				const result = await service.findOrCreate(...Object.values(productsData[0].brand));
 				expect(result[1]).toBeTruthy();
@@ -118,7 +139,7 @@ describe('Services testing', () => {
 			async () => {
 				const brand = await service.add(...Object.values(productsData[0].brand));
 				const numberBrandsUpdated = await service.update(brand.id, {name:"name changed"});
-				const brandUpdated = await service.findOne("name changed");
+				const brandUpdated = await service.findOne(brand.id);
 
 				expect(numberBrandsUpdated).toEqual([1]);
 				expect(brandUpdated.name).toBe("name changed");
@@ -129,11 +150,83 @@ describe('Services testing', () => {
 			async () => {
 				const brand = await service.add(...Object.values(productsData[0].brand));
 				const numberBrandsDelete = await service.delete(brand.id);
-				const brandFinded = await service.findOne(brand.name);
+				const brandFinded = await service.findOne(brand.id);
 
 				expect(numberBrandsDelete).toBe(1);
 				expect(brandFinded).toBeNull();
 			}
 		);
+	});
+
+	describe('Discount service', () => {
+		beforeAll(() => {
+			service = new DiscountService();
+		});
+
+		beforeEach( async () => {
+			await conn.sync({force: true});
+		});
+
+		it('The add method should add a new record in the Discounts table of the database', async () => {
+			const discount = await service.add(...Object.values(discountsData[0]));
+			expect( discount instanceof DiscountModel).toBeTruthy();
+			expect( discount.value ).toBe(discountsData[0].value);
+		});
+
+		it('The bulkAdd method should add multiple Discounts records to the database', async () => {
+			const discounts = await service.bulkAdd(discountsData);
+			expect(Array.isArray(discounts)).toBeTruthy();
+			discounts.forEach( (discount, i) => {
+				expect( discount instanceof DiscountModel).toBeTruthy();
+				expect( discount.value ).toBe(discountsData[i].value);
+			});
+		});
+
+		it('The find method must return all discounts registered in the database',
+			async () => {
+
+				const allDiscountsCreated = await service.bulkAdd(discountsData);
+				const discountsFinded = await service.find();
+				discountsFinded.forEach( (discount, i) => {
+					expect( discount instanceof DiscountModel).toBeTruthy();
+					expect(discount.value).toBe(allDiscountsCreated[i].value);
+				});
+			}
+		);
+
+		it('The findOne method must return the discount with the indicated id',
+			async () => {
+				const discountCreated = await service.add(...Object.values(discountsData[0]));
+				const discountFinded = await service.findOne(discountCreated.id);
+				expect( discountFinded instanceof DiscountModel).toBeTruthy();
+				expect(discountFinded.id).toEqual(discountCreated.id);
+				expect(discountFinded.value).toEqual(discountCreated.value);
+			}
+		);
+
+		it('The update method should return an array with a value of 1 if the discount has been updated',
+			async () => {
+				const discount = await service.add(...Object.values(discountsData[0]));
+				const numberDiscountsUpdated = await service.update(discount.id, {value:96, isEnabled: false});
+				const discountUpdated = await service.findOne(discount.id);
+
+				expect(numberDiscountsUpdated).toEqual([1]);
+				expect(discountUpdated.value).toBe(96);
+				expect(discountUpdated.isEnabled).toBeFalsy();
+			}
+		);
+
+		it('The delete method should return a value of 1 if the discount has been deleted',
+			async () => {
+				const discount = await service.add(...Object.values(discountsData[0]));
+				const numberDiscountsDelete = await service.delete(discount.id);
+				const discountFinded = await service.findOne(discount.id);
+
+				expect(numberDiscountsDelete).toBe(1);
+				expect(discountFinded).toBeNull();
+			}
+		);
+
+
 	});
 });
