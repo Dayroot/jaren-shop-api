@@ -26,6 +26,14 @@ const Product = conn.define('Product', {
 				}
 			}
 		}
+	},
+
+	stock: {
+		type: DataTypes.INTEGER,
+		defaultValue: 0,
+		validate: {
+			isInt: true,
+		}
 	}
 });
 
