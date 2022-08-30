@@ -4,9 +4,15 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon src/index.js",
-		"start": "node src/index.js",
-		"lint": "eslint"
+		"test": "jest --detectOpenHandles",
+		"test:models": "jest --verbose --detectOpenHandles models.test.js",
+		"test:routes": "jest --verbose --detectOpenHandles routes.test.js",
+		"test:services": "jest --verbose --detectOpenHandles services.test.js",
+		"dev": "nodemon -r dotenv/config src/index.js dotenv_config_path=environments/.env.development",
+		"start": "node -r dotenv/config src/index.js dotenv_config_path=environments/.env.production",
+		"lint": "eslint",
+		"migration:dev": "node -r dotenv/config src/db/modelAssociations.js dotenv_config_path=environments/.env.development",
+		"migration:prod": "node -r dotenv/config src/db/modelAssociations.js dotenv_config_path=environments/.env.production"
 	},
 	"keywords": [],
 	"author": "Dallan Caceres",
