@@ -24,8 +24,8 @@ class BrandService {
 		});
 	}
 
-	findOne = async (name) => {
-		return await Brand.findOne({where: {name}});
+	findOne = async (id) => {
+		return await Brand.findOne({where: {id}});
 	}
 
 	update = async (id, newData) => {
