@@ -1,0 +1,17 @@
+const {DataTypes} = require('sequelize');
+const conn = require('../connectionDB');
+
+//Custom Validations
+const {isImageUrl} = require('../../utils/customValidations');
+
+const ProductImage = conn.define( 'ProductImage', {
+	url: {
+		type: DataTypes.STRING,
+		allowNull: false,
+		validate: {
+			isImageUrl,
+		}
+	}
+});
+
+module.exports = ProductImage;
