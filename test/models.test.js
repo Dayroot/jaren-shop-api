@@ -42,6 +42,12 @@ describe('Model testing', () => {
 					.catch(() => done());
 			});
 
+			it("If the stock property value is diferent a integer type, the record is not created", (done) => {
+				ProductModel.create({name: "Any name", description:"Any text", stock: "test"})
+					.then(() => done("The record should not have been created"))
+					.catch(() => done());
+			});
+
 			it("If the description property is null, the record is not created", (done) => {
 				ProductModel.create({name: "Any name"})
 					.then(() => done("The record should not have been created"))
