@@ -1,11 +1,12 @@
-const {DataTypes} = require('sequelize');
+const {DataTypes, Model} = require('sequelize');
 const conn = require('../connectionDB');
 
 //Custom Validations
 const {isString} = require('../../utils/customValidations');
 
+class Product extends Model {}
 
-const Product = conn.define('Product', {
+Product.init({
 	name: {
 		type: DataTypes.STRING,
 		allowNull: false,
@@ -35,6 +36,11 @@ const Product = conn.define('Product', {
 			isInt: true,
 		}
 	}
+}, {
+	sequelize: conn,
+	modelName: 'Product',
+	timestamps: false,
 });
+
 
 module.exports = Product;

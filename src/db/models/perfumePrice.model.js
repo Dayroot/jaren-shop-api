@@ -6,6 +6,8 @@ const PerfumePrice = conn.define('PerfumePrice', {
 		type: DataTypes.FLOAT,
 		allowNull: false,
 	}
+}, {
+	timestamps: false,
 });
 
 

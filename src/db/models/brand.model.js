@@ -20,6 +20,8 @@ const Brand = conn.define('Brand', {
 			isImageUrl,
 		}
 	}
+}, {
+	timestamps: false,
 });
 
 module.exports = Brand;

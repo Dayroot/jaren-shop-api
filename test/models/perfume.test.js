@@ -30,7 +30,7 @@ describe( 'Perfume model', () => {
 				.catch( () => done() );
 		});
 
-		it("If the value of gender property is not men or women, the record will not be created", (done) => {
+		it("If the value of gender property is not men or woman, the record will not be created", (done) => {
 			PerfumeModel.create({gender: 'Other value'})
 				.then( () => done("The record should not have been created"))
 				.catch( () => done());

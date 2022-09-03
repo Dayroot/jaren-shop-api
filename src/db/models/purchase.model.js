@@ -13,6 +13,8 @@ const Purchase = conn.define( 'Purchase', {
 		type: DataTypes.ENUM('pending', 'dispatched', 'delivered'),
 		defaultValue: 'pending',
 	}
+}, {
+	timestamps: false,
 });
 
 module.exports = Purchase;

@@ -6,7 +6,7 @@ dotenv.config (
 	{ path: path.resolve(process.cwd(), 'environments', '.env.test') }
 );
 
-const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
+const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
 
 //Models
 const ProductImageModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'productImage.model.js'));
@@ -22,26 +22,23 @@ const productImagesData = [
 
 
 describe('ProductImage service', () => {
-	beforeAll(() => {
-		service = new ProductImageService();
-	});
 
 	beforeEach( async () => {
-		await conn.sync({force: true});
+		await migration();
 	});
 
 	afterAll( async () => {
-		await conn.sync({force: true});
+		await migration();
 	});
 
 	it('The add method should add a new record in the ProductImages table of the database', async () => {
-		const productImage = await service.add(...Object.values(productImagesData[0]));
+		const productImage = await ProductImageService.add(...Object.values(productImagesData[0]));
 		expect( productImage instanceof ProductImageModel).toBeTruthy();
 		expect( productImage.url ).toBe(productImagesData[0].url);
 	});
 
 	it('The bulkAdd method should add multiple ProductImages records to the database', async () => {
-		const productImages = await service.bulkAdd(productImagesData);
+		const productImages = await ProductImageService.bulkAdd(productImagesData);
 		expect(Array.isArray(productImages)).toBeTruthy();
 		productImages.forEach( (productImage, i) => {
 			expect( productImage instanceof ProductImageModel).toBeTruthy();
@@ -52,8 +49,8 @@ describe('ProductImage service', () => {
 	it('The find method must return all productImages registered in the database',
 		async () => {
 
-			const allProductImagesCreated = await service.bulkAdd(productImagesData);
-			const productImagesFinded = await service.find();
+			const allProductImagesCreated = await ProductImageService.bulkAdd(productImagesData);
+			const productImagesFinded = await ProductImageService.find();
 			productImagesFinded.forEach( (productImage, i) => {
 				expect( productImage instanceof ProductImageModel).toBeTruthy();
 				expect(productImage.url).toBe(allProductImagesCreated[i].url);
@@ -63,8 +60,8 @@ describe('ProductImage service', () => {
 
 	it('The findOne method must return the productImage with the indicated id',
 		async () => {
-			const productImageCreated = await service.add(...Object.values(productImagesData[0]));
-			const productImageFinded = await service.findOne(productImageCreated.id);
+			const productImageCreated = await ProductImageService.add(...Object.values(productImagesData[0]));
+			const productImageFinded = await ProductImageService.findOne(productImageCreated.id);
 			expect( productImageFinded instanceof ProductImageModel).toBeTruthy();
 			expect(productImageFinded.id).toEqual(productImageCreated.id);
 			expect(productImageFinded.url).toEqual(productImageCreated.url);
@@ -73,9 +70,9 @@ describe('ProductImage service', () => {
 
 	it('The update method should return an array with a value of 1 if the productImage has been updated',
 		async () => {
-			const productImage = await service.add(...Object.values(productImagesData[0]));
-			const numberProductImagesUpdated = await service.update(productImage.id, {url: 'http://changed-image.png'});
-			const productImageUpdated = await service.findOne(productImage.id);
+			const productImage = await ProductImageService.add(...Object.values(productImagesData[0]));
+			const numberProductImagesUpdated = await ProductImageService.update(productImage.id, {url: 'http://changed-image.png'});
+			const productImageUpdated = await ProductImageService.findOne(productImage.id);
 
 			expect(numberProductImagesUpdated).toEqual([1]);
 			expect(productImageUpdated.url).toBe('http://changed-image.png');
@@ -84,9 +81,9 @@ describe('ProductImage service', () => {
 
 	it('The delete method should return a value of 1 if the productImage has been deleted',
 		async () => {
-			const productImage = await service.add(...Object.values(productImagesData[0]));
-			const numberProductImagesDelete = await service.delete(productImage.id);
-			const productImageFinded = await service.findOne(productImage.id);
+			const productImage = await ProductImageService.add(...Object.values(productImagesData[0]));
+			const numberProductImagesDelete = await ProductImageService.delete(productImage.id);
+			const productImageFinded = await ProductImageService.findOne(productImage.id);
 
 			expect(numberProductImagesDelete).toBe(1);
 			expect(productImageFinded).toBeNull();

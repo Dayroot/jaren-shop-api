@@ -16,10 +16,17 @@ const Discount = conn.define('Discount', {
 			isDate: true,
 		}
 	},
+	startDate: {
+		type: DataTypes.DATE,
+		defaultValue: Date.now,
+		allowNull: true,
+	},
 	isEnabled: {
 		type: DataTypes.BOOLEAN,
 		defaultValue: true,
 	}
+}, {
+	timestamps: false,
 });
 
 

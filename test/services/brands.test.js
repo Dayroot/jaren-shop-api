@@ -6,7 +6,7 @@ dotenv.config (
 	{ path: path.resolve(process.cwd(), 'environments', '.env.test') }
 );
 
-const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
+const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
 
 //Models
 const BrandModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'brand.model.js'));
@@ -32,27 +32,23 @@ const brandsData = [
 
 describe('Brand service', () => {
 
-	beforeAll(() => {
-		service = new BrandService();
-	});
-
 	beforeEach( async () => {
-		await conn.sync({force: true});
+		await migration();
 	});
 
 	afterAll( async () => {
-		await conn.sync({force: true});
+		await migration();
 	});
 
 	it('The add method should add a new record in the Brands table of the database', async () => {
-		const brand = await service.add(...Object.values(brandsData[0]));
+		const brand = await BrandService.add(...Object.values(brandsData[0]));
 		expect( brand instanceof BrandModel).toBeTruthy();
 		expect( brand.name ).toEqual(brandsData[0].name);
 		expect( brand.logoUrl ).toEqual(brandsData[0].logoUrl);
 	});
 
 	it('The bulkAdd method should add multiple Brands records to the database', async () => {
-		const brands = await service.bulkAdd(brandsData);
+		const brands = await BrandService.bulkAdd(brandsData);
 		brands.forEach( (brand, i) => {
 			expect( brand instanceof BrandModel).toBeTruthy();
 			expect( brand.name ).toEqual(brandsData[i].name);
@@ -63,10 +59,10 @@ describe('Brand service', () => {
 	it('The find method must return all brands registered in the database',
 		async () => {
 			const promises = brandsData.map(async (brand) => {
-				return await service.add(...Object.values(brand));
+				return await BrandService.add(...Object.values(brand));
 			});
 			const allBrandsCreated = await Promise.all(promises);
-			const brandsFinded = await service.find();
+			const brandsFinded = await BrandService.find();
 			brandsFinded.forEach( (brand, i) => {
 				expect( brand instanceof BrandModel).toBeTruthy();
 				expect(brand.name).toEqual(allBrandsCreated[i].name);
@@ -76,8 +72,8 @@ describe('Brand service', () => {
 
 	it('The findOne method must return the brand with the indicated id',
 		async () => {
-			const brandCreated = await service.add(...Object.values(brandsData[0]));
-			const brandFinded = await service.findOne(brandCreated.id);
+			const brandCreated = await BrandService.add(...Object.values(brandsData[0]));
+			const brandFinded = await BrandService.findOne(brandCreated.id);
 			expect( brandFinded instanceof BrandModel).toBeTruthy();
 			expect(brandFinded.id).toEqual(brandCreated.id);
 			expect(brandFinded.name).toEqual(brandCreated.name);
@@ -86,18 +82,17 @@ describe('Brand service', () => {
 
 	it('The findOrCreate method must return the brand with the indicated name or create it if it does not exist',
 		async () => {
-			const result = await service.findOrCreate(...Object.values(brandsData[0]));
-			expect(result[1]).toBeTruthy();
-			expect( result[0] instanceof BrandModel).toBeTruthy();
-			expect(result[0].name).toEqual(brandsData[0].name);
+			const brand = await BrandService.findOrCreate(...Object.values(brandsData[0]));
+			expect( brand instanceof BrandModel).toBeTruthy();
+			expect(brand.name).toEqual(brandsData[0].name);
 		}
 	);
 
 	it('The update method should return an array with a value of 1 if the brand has been updated',
 		async () => {
-			const brand = await service.add(...Object.values(brandsData[0]));
-			const numberBrandsUpdated = await service.update(brand.id, {name:"name changed"});
-			const brandUpdated = await service.findOne(brand.id);
+			const brand = await BrandService.add(...Object.values(brandsData[0]));
+			const numberBrandsUpdated = await BrandService.update(brand.id, {name:"name changed"});
+			const brandUpdated = await BrandService.findOne(brand.id);
 
 			expect(numberBrandsUpdated).toEqual([1]);
 			expect(brandUpdated.name).toBe("name changed");
@@ -106,9 +101,9 @@ describe('Brand service', () => {
 
 	it('The delete method should return a value of 1 if the brand has been deleted',
 		async () => {
-			const brand = await service.add(...Object.values(brandsData[0]));
-			const numberBrandsDelete = await service.delete(brand.id);
-			const brandFinded = await service.findOne(brand.id);
+			const brand = await BrandService.add(...Object.values(brandsData[0]));
+			const numberBrandsDelete = await BrandService.delete(brand.id);
+			const brandFinded = await BrandService.findOne(brand.id);
 
 			expect(numberBrandsDelete).toBe(1);
 			expect(brandFinded).toBeNull();

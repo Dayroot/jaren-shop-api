@@ -2,29 +2,30 @@
 const ProductImage = require('../db/models/productImage.model');
 
 class ProductImageService {
-	add = async ( url ) => {
+
+	static add = async ( url ) => {
 		return await ProductImage.create({url});
 	}
 
-	bulkAdd = async (ProductImagesArray) => {
+	static bulkAdd = async (ProductImagesArray) => {
 		return await ProductImage.bulkCreate(ProductImagesArray);
 	}
 
-	find = async () => {
+	static find = async () => {
 		return await ProductImage.findAll();
 	}
 
-	findOne = async (id) => {
+	static findOne = async (id) => {
 		return await ProductImage.findOne({where: {id}});
 	}
 
-	update = async (id, newData) => {
+	static update = async (id, newData) => {
 		return await ProductImage.update({...newData}, {
 			where: {id}
 		});
 	}
 
-	delete = async (id) => {
+	static delete = async (id) => {
 		return await ProductImage.destroy({where: {id}});
 	}
 }

@@ -29,8 +29,8 @@ describe( 'PerfumeSize model', () => {
 			.catch( () => done());
 		});
 
-		it("If the size property is not an alphanumeric value, the record will not be created", (done) => {
-			PerfumeSizeModel.create({size: "@ - /"})
+		it("If the size property is not an integer value, the record will not be created", (done) => {
+			PerfumeSizeModel.create({size: "test"})
 			.then( () => done("The record should not have been created"))
 			.catch( () => done());
 		});

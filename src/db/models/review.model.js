@@ -18,6 +18,8 @@ const Review = conn.define( 'Review', {
 			isString,
 		}
 	}
+}, {
+	timestamps: false,
 });
 
 module.exports = Review;

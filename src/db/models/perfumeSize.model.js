@@ -3,12 +3,14 @@ const conn = require('../connectionDB');
 
 const PerfumeSize = conn.define( 'PerfumeSize', {
 	size: {
-		type: DataTypes.STRING,
+		type: DataTypes.INTEGER,
 		allowNull: false,
 		validate: {
-			isAlphanumeric: true,
+			isInt: true,
 		}
 	}
+}, {
+	timestamps: false,
 });
 
 module.exports = PerfumeSize;

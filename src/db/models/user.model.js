@@ -33,12 +33,9 @@ const User = conn.define( 'User', {
 			isString,
 		}
 	}
+}, {
+	timestamps: false,
 });
-
-
-// User.beforeCreate((use, options) => {
-
-// });
 
 
 module.exports = User;

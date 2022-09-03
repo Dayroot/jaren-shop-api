@@ -5,14 +5,16 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "jest --detectOpenHandles",
-		"test:models": "jest --verbose --detectOpenHandles models.test.js",
-		"test:routes": "jest --verbose --detectOpenHandles routes.test.js",
-		"test:services": "jest --verbose --detectOpenHandles services.test.js",
+		"test:models": "jest --verbose --detectOpenHandles models/",
+		"test:routes": "jest --verbose --detectOpenHandles routes/",
+		"test:services": "jest --verbose --detectOpenHandles services/",
+		"test:service:products": "jest --verbose --detectOpenHandles services/products",
 		"dev": "nodemon -r dotenv/config src/index.js dotenv_config_path=environments/.env.development",
 		"start": "node -r dotenv/config src/index.js dotenv_config_path=environments/.env.production",
 		"lint": "eslint",
-		"migration:dev": "node -r dotenv/config src/db/modelAssociations.js dotenv_config_path=environments/.env.development",
-		"migration:prod": "node -r dotenv/config src/db/modelAssociations.js dotenv_config_path=environments/.env.production"
+		"migration:test": "node -r dotenv/config src/db/migration.js dotenv_config_path=environments/.env.test",
+		"migration:dev": "node -r dotenv/config src/db/migration.js dotenv_config_path=environments/.env.development",
+		"migration:prod": "node -r dotenv/config src/db/migration.js dotenv_config_path=environments/.env.production"
 	},
 	"keywords": [],
 	"author": "Dallan Caceres",

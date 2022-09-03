@@ -10,29 +10,34 @@ const Brand = require('./models/brand.model');
 const Discount = require('./models/discount.model');
 const ProductImage = require('./models/productImage.model');
 
-try {
-	Perfume.belongsToMany(PerfumeSize, {through: PerfumePrice});
-	PerfumeSize.belongsToMany(Perfume, {through: PerfumePrice});
+const associations = async () => {
+	try {
+		Perfume.belongsToMany(PerfumeSize, {through: PerfumePrice});
+		PerfumeSize.belongsToMany(Perfume, {through: PerfumePrice});
 
-	Product.hasOne(Perfume);
-	Perfume.belongsTo(Product);
+		Product.hasOne(Perfume);
+		Perfume.belongsTo(Product);
 
-	Brand.hasMany(Product, {
-		onDelete: 'CASCADE',
-	});
-	Product.belongsTo(Brand);
+		Brand.hasMany(Product, {
+			onDelete: 'CASCADE',
+		});
+		Product.belongsTo(Brand);
 
-	Discount.hasMany(Product);
-	Product.belongsTo(Discount);
+		Discount.hasMany(Product);
+		Product.belongsTo(Discount);
 
-	Product.hasMany(ProductImage);
-	ProductImage.belongsTo(Product);
+		Product.hasMany(ProductImage, {
+			onDelete: 'CASCADE',
+		});
+		ProductImage.belongsTo(Product);
 
 
-	//Sync changes
-	conn.sync({force: true});
+		//Sync changes
+		await conn.sync({force: true});
 
-} catch (error) {
-	console.error(error);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
+module.exports = associations;

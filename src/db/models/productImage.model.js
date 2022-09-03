@@ -12,6 +12,8 @@ const ProductImage = conn.define( 'ProductImage', {
 			isImageUrl,
 		}
 	}
+}, {
+	timestamps: false,
 });
 
 module.exports = ProductImage;
