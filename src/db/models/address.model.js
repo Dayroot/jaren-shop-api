@@ -4,7 +4,7 @@ const conn = require('../connectionDB');
 //Custom Validations
 const {isString, isAlphaVerbose, isNumericString} = require('../../utils/customValidations');
 
-const Address = conn.define( 'Address', {
+const Address = conn.define( 'address', {
 
 	state: {
 		type: DataTypes.STRING,

@@ -9,6 +9,9 @@
 		"test:routes": "jest --verbose --detectOpenHandles routes/",
 		"test:services": "jest --verbose --detectOpenHandles services/",
 		"test:service:products": "jest --verbose --detectOpenHandles services/products",
+		"test:service:brands": "jest --verbose --detectOpenHandles services/brands",
+		"test:service:discounts": "jest --verbose --detectOpenHandles services/discounts",
+		"test:service:images": "jest --verbose --detectOpenHandles services/productImages",
 		"dev": "nodemon -r dotenv/config src/index.js dotenv_config_path=environments/.env.development",
 		"start": "node -r dotenv/config src/index.js dotenv_config_path=environments/.env.production",
 		"lint": "eslint",
@@ -28,6 +31,7 @@
 		"prettier": "^2.7.1"
 	},
 	"dependencies": {
+		"@hapi/boom": "^10.0.0",
 		"dotenv": "^16.0.1",
 		"express": "^4.18.1",
 		"jest": "^28.1.3",

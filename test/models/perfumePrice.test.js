@@ -11,12 +11,12 @@ dotenv.config (
 const db = require( path.resolve(process.cwd(), 'src','db', 'connectionDB.js'));
 
 //Models
-const PerfumeSizeModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'perfumeSize.model.js'));
+const PerfumePriceModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'perfumePrice.model.js'));
 
-describe( 'PerfumeSize model', () => {
+describe( 'PerfumePrice model', () => {
 
 	beforeEach( async () => {
-		await PerfumeSizeModel.sync({force: true});
+		await PerfumePriceModel.sync({force: true});
 	});
 
 	afterAll( async () => {
@@ -24,13 +24,25 @@ describe( 'PerfumeSize model', () => {
 	});
 	describe( 'Validations', () => {
 		it("If the size property is null, the record will not be created", (done) => {
-			PerfumeSizeModel.create({})
+			PerfumePriceModel.create({price: 120.09})
 			.then( () => done("The record should not have been created"))
 			.catch( () => done());
 		});
 
 		it("If the size property is not an integer value, the record will not be created", (done) => {
-			PerfumeSizeModel.create({size: "test"})
+			PerfumePriceModel.create({size: "test", price: 120.09})
+			.then( () => done("The record should not have been created"))
+			.catch( () => done());
+		});
+
+		it("If the price property is null, the record will not be created", (done) => {
+			PerfumePriceModel.create({size: 124})
+			.then( () => done("The record should not have been created"))
+			.catch( () => done());
+		});
+
+		it("If the price property is not an integer value, the record will not be created", (done) => {
+			PerfumePriceModel.create({price: "test", size: 124})
 			.then( () => done("The record should not have been created"))
 			.catch( () => done());
 		});

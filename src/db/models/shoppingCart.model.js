@@ -1,6 +1,6 @@
 const conn = require('../connectionDB');
 
-const ShoppingCart = conn.define('ShoppingCart', {}, {
+const ShoppingCart = conn.define('shoppingCart', {}, {
 	timestamps: false,
 });
 

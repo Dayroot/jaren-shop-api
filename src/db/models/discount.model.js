@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const conn = require('../connectionDB');
 
-const Discount = conn.define('Discount', {
+const Discount = conn.define('discount', {
 	value: {
 		type: DataTypes.FLOAT,
 		allowNull: false,
@@ -18,8 +18,10 @@ const Discount = conn.define('Discount', {
 	},
 	startDate: {
 		type: DataTypes.DATE,
-		defaultValue: Date.now,
-		allowNull: true,
+		defaultValue: DataTypes.NOW,
+		validate: {
+			isDate: true,
+		}
 	},
 	isEnabled: {
 		type: DataTypes.BOOLEAN,

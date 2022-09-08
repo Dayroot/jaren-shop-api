@@ -4,7 +4,7 @@ const conn = require('../connectionDB');
 //Custom Validations
 const {isString, isImageUrl} = require('../../utils/customValidations');
 
-const Brand = conn.define('Brand', {
+const Brand = conn.define('brand', {
 	name: {
 		type: DataTypes.STRING,
 		allowNull: false,

@@ -4,7 +4,7 @@ const conn = require('../connectionDB');
 //Custom Validations
 const {isString, isAlphaVerbose} = require('../../utils/customValidations');
 
-const User = conn.define( 'User', {
+const User = conn.define( 'user', {
 	firstName: {
 		type: DataTypes.STRING,
 		allowNull: false,

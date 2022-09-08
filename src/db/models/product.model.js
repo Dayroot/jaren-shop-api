@@ -1,8 +1,13 @@
 const {DataTypes, Model} = require('sequelize');
 const conn = require('../connectionDB');
 
+//Models
+const Brand = require('./brand.model');
+const ProductImage = require('./productImage.model');
+
+
 //Custom Validations
-const {isString} = require('../../utils/customValidations');
+const {isString, isAlphaNumVerbose} = require('../../utils/customValidations');
 
 class Product extends Model {}
 
@@ -11,8 +16,8 @@ Product.init({
 		type: DataTypes.STRING,
 		allowNull: false,
 		validate: {
-			isAlphanumeric: true,
 			isString,
+			isAlphaNumVerbose,
 		}
 
 	},
@@ -21,11 +26,7 @@ Product.init({
 		type: DataTypes.TEXT,
 		allowNull: false,
 		validate: {
-			isString(value) {
-				if(typeof value !== 'string') {
-					throw new Error('The value must be of type string');
-				}
-			}
+			isString,
 		}
 	},
 
@@ -38,8 +39,27 @@ Product.init({
 	}
 }, {
 	sequelize: conn,
-	modelName: 'Product',
+	modelName: 'product',
 	timestamps: false,
+	scopes: {
+		format: {
+			include: [
+				{
+					model: Brand,
+				},
+				{
+					model: ProductImage,
+					as: 'images',
+					attributes: {
+						exclude: ['productId']
+					},
+				}
+			],
+			attributes: {
+				exclude: ['brandId']
+			},
+		}
+	}
 });
 
 

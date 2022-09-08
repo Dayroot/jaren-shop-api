@@ -1,7 +1,7 @@
 const {DataTypes} = require('sequelize');
 const conn = require('../connectionDB');
 
-const Purchase = conn.define( 'Purchase', {
+const Purchase = conn.define( 'purchase', {
 	date: {
 		type: DataTypes.DATE,
 		defaultValue: DataTypes.NOW,

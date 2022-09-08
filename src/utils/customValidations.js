@@ -19,6 +19,13 @@ const isAlphaVerbose = (value) => {
 	}
 };
 
+const isAlphaNumVerbose = (value) => {
+	const regex = /^[a-zA-Z0-9 ]+$/;
+	if(!regex.test(value)) {
+		throw new Error('The value must be alphanumeric, spaces are also allowed');
+	}
+};
+
 const isImageUrl = (url) => {
 	const regex = /^(http|https):\/\/.*\.(png|jpg|svg)$/i;
 	if(!regex.test(url)){
@@ -30,5 +37,6 @@ module.exports = {
 	isAlphaVerbose,
 	isNumericString,
 	isImageUrl,
+	isAlphaNumVerbose,
 }
 

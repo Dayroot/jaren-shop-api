@@ -42,15 +42,16 @@ describe('Brand service', () => {
 
 	it('The add method should add a new record in the Brands table of the database', async () => {
 		const brand = await BrandService.add(...Object.values(brandsData[0]));
-		expect( brand instanceof BrandModel).toBeTruthy();
+		expect( typeof brand ).toBe('object');
 		expect( brand.name ).toEqual(brandsData[0].name);
 		expect( brand.logoUrl ).toEqual(brandsData[0].logoUrl);
 	});
 
 	it('The bulkAdd method should add multiple Brands records to the database', async () => {
 		const brands = await BrandService.bulkAdd(brandsData);
+		expect(Array.isArray(brands)).toBeTruthy();
 		brands.forEach( (brand, i) => {
-			expect( brand instanceof BrandModel).toBeTruthy();
+			expect( typeof brand ).toBe('object');
 			expect( brand.name ).toEqual(brandsData[i].name);
 			expect( brand.logoUrl ).toEqual(brandsData[i].logoUrl);
 		});
@@ -58,13 +59,12 @@ describe('Brand service', () => {
 
 	it('The find method must return all brands registered in the database',
 		async () => {
-			const promises = brandsData.map(async (brand) => {
-				return await BrandService.add(...Object.values(brand));
-			});
-			const allBrandsCreated = await Promise.all(promises);
+			const allBrandsCreated = await BrandService.bulkAdd(brandsData);
 			const brandsFinded = await BrandService.find();
+
+			expect(Array.isArray(allBrandsCreated)).toBeTruthy();
 			brandsFinded.forEach( (brand, i) => {
-				expect( brand instanceof BrandModel).toBeTruthy();
+				expect( typeof brand ).toBe('object');
 				expect(brand.name).toEqual(allBrandsCreated[i].name);
 			});
 		}
@@ -74,7 +74,7 @@ describe('Brand service', () => {
 		async () => {
 			const brandCreated = await BrandService.add(...Object.values(brandsData[0]));
 			const brandFinded = await BrandService.findOne(brandCreated.id);
-			expect( brandFinded instanceof BrandModel).toBeTruthy();
+			expect( typeof brandFinded ).toBe('object');
 			expect(brandFinded.id).toEqual(brandCreated.id);
 			expect(brandFinded.name).toEqual(brandCreated.name);
 		}
@@ -83,18 +83,17 @@ describe('Brand service', () => {
 	it('The findOrCreate method must return the brand with the indicated name or create it if it does not exist',
 		async () => {
 			const brand = await BrandService.findOrCreate(...Object.values(brandsData[0]));
-			expect( brand instanceof BrandModel).toBeTruthy();
+			expect( typeof brand ).toBe('object');
 			expect(brand.name).toEqual(brandsData[0].name);
 		}
 	);
 
-	it('The update method should return an array with a value of 1 if the brand has been updated',
+	it('The update method should return the brand updated',
 		async () => {
 			const brand = await BrandService.add(...Object.values(brandsData[0]));
-			const numberBrandsUpdated = await BrandService.update(brand.id, {name:"name changed"});
-			const brandUpdated = await BrandService.findOne(brand.id);
+			const brandUpdated = await BrandService.update(brand.id, {name:"name changed"});
 
-			expect(numberBrandsUpdated).toEqual([1]);
+			expect( typeof brandUpdated ).toBe('object');
 			expect(brandUpdated.name).toBe("name changed");
 		}
 	);
@@ -103,10 +102,7 @@ describe('Brand service', () => {
 		async () => {
 			const brand = await BrandService.add(...Object.values(brandsData[0]));
 			const numberBrandsDelete = await BrandService.delete(brand.id);
-			const brandFinded = await BrandService.findOne(brand.id);
-
 			expect(numberBrandsDelete).toBe(1);
-			expect(brandFinded).toBeNull();
 		}
 	);
 });

@@ -2,26 +2,32 @@
 const Discount = require('../db/models/discount.model');
 
 class DiscountService {
-	static add = async ( value, finishDate, isEnabled ) => {
-		return await Discount.create({value, finishDate, isEnabled});
+	static add = async ( value, startDate, finishDate, isEnabled ) => {
+		const discount = await Discount.create({value, startDate, finishDate, isEnabled});
+		return discount.toJSON();
 	}
 
 	static bulkAdd = async (discountsArray) => {
-		return await Discount.bulkCreate(discountsArray);
+		const discounts = await Discount.bulkCreate(discountsArray);
+		return discounts.map( discount => discount.toJSON());
 	}
 
 	static find = async () => {
-		return await Discount.findAll();
+		const discounts = await Discount.findAll();
+		if(!Array.isArray(discounts)) return [];
+		return discounts.map( discount => discount.toJSON());
 	}
 
 	static findOne = async (id) => {
-		return await Discount.findOne({where: {id}});
+		const discount = await Discount.findOne({where: {id}});
+		return discount.toJSON();
 	}
 
 	static update = async (id, newData) => {
-		return await Discount.update({...newData}, {
+		await Discount.update({...newData}, {
 			where: {id}
 		});
+		return await this.findOne(id);
 	}
 
 	static delete = async (id) => {

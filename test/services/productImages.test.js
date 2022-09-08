@@ -33,7 +33,7 @@ describe('ProductImage service', () => {
 
 	it('The add method should add a new record in the ProductImages table of the database', async () => {
 		const productImage = await ProductImageService.add(...Object.values(productImagesData[0]));
-		expect( productImage instanceof ProductImageModel).toBeTruthy();
+		expect( typeof productImage).toBe('object');
 		expect( productImage.url ).toBe(productImagesData[0].url);
 	});
 
@@ -41,7 +41,7 @@ describe('ProductImage service', () => {
 		const productImages = await ProductImageService.bulkAdd(productImagesData);
 		expect(Array.isArray(productImages)).toBeTruthy();
 		productImages.forEach( (productImage, i) => {
-			expect( productImage instanceof ProductImageModel).toBeTruthy();
+			expect( typeof productImage).toBe('object');
 			expect( productImage.url ).toBe(productImagesData[i].url);
 		});
 	});
@@ -51,8 +51,10 @@ describe('ProductImage service', () => {
 
 			const allProductImagesCreated = await ProductImageService.bulkAdd(productImagesData);
 			const productImagesFinded = await ProductImageService.find();
+
+			expect(Array.isArray(productImagesFinded)).toBeTruthy();
 			productImagesFinded.forEach( (productImage, i) => {
-				expect( productImage instanceof ProductImageModel).toBeTruthy();
+				expect( typeof productImage).toBe('object');
 				expect(productImage.url).toBe(allProductImagesCreated[i].url);
 			});
 		}
@@ -62,7 +64,8 @@ describe('ProductImage service', () => {
 		async () => {
 			const productImageCreated = await ProductImageService.add(...Object.values(productImagesData[0]));
 			const productImageFinded = await ProductImageService.findOne(productImageCreated.id);
-			expect( productImageFinded instanceof ProductImageModel).toBeTruthy();
+
+			expect( typeof productImageFinded).toBe('object');
 			expect(productImageFinded.id).toEqual(productImageCreated.id);
 			expect(productImageFinded.url).toEqual(productImageCreated.url);
 		}
@@ -71,10 +74,9 @@ describe('ProductImage service', () => {
 	it('The update method should return an array with a value of 1 if the productImage has been updated',
 		async () => {
 			const productImage = await ProductImageService.add(...Object.values(productImagesData[0]));
-			const numberProductImagesUpdated = await ProductImageService.update(productImage.id, {url: 'http://changed-image.png'});
-			const productImageUpdated = await ProductImageService.findOne(productImage.id);
+			const productImageUpdated = await ProductImageService.update(productImage.id, {url: 'http://changed-image.png'});
 
-			expect(numberProductImagesUpdated).toEqual([1]);
+			expect( typeof productImageUpdated).toBe('object');
 			expect(productImageUpdated.url).toBe('http://changed-image.png');
 		}
 	);
@@ -83,10 +85,8 @@ describe('ProductImage service', () => {
 		async () => {
 			const productImage = await ProductImageService.add(...Object.values(productImagesData[0]));
 			const numberProductImagesDelete = await ProductImageService.delete(productImage.id);
-			const productImageFinded = await ProductImageService.findOne(productImage.id);
 
 			expect(numberProductImagesDelete).toBe(1);
-			expect(productImageFinded).toBeNull();
 		}
 	);
 });
