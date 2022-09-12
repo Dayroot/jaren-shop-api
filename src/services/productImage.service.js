@@ -13,8 +13,12 @@ class ProductImageService {
 		return images.map(image => image.toJSON());
 	}
 
-	static find = async () => {
-		const images = await ProductImage.findAll();
+	static find = async (params) => {
+		let searchRequest = {};
+		if(typeof params === 'object' && Object.keys(params).length !== 0){
+			searchRequest.where = params;
+		}
+		const images = await ProductImage.findAll(searchRequest);
 		if(!Array.isArray(images)) return [];
 		return images.map(image => image.toJSON());
 	}
