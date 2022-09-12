@@ -13,8 +13,12 @@ class BrandService {
 		return brands.map( brand => brand.toJSON());
 	}
 
-	static find = async () => {
-		const brands = await Brand.findAll();
+	static find = async (params) => {
+		let searchRequest = {};
+		if(typeof params === 'object' && Object.keys(params).length !== 0){
+			searchRequest.where = params;
+		}
+		const brands = await Brand.findAll(searchRequest);
 		if(!Array.isArray(brands)) return [];
 		return brands.map( brand => brand.toJSON());
 	}
