@@ -37,15 +37,6 @@ describe('Purchase model', () => {
 			.catch( () => done());
 		});
 
-		it('If date property is null, the record will be created and the status value must be the current date', () =>
-			PurchaseModel.create({status: 'pending'})
-			.then( (purchase) => {
-				const currentDate = (new Date()).toLocaleDateString();
-				const purchaseDate = (new Date(purchase.date)).toLocaleDateString();
-				expect(purchaseDate).toEqual(currentDate);
-			})
-		);
-
 	});
 
 });
