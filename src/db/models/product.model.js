@@ -36,7 +36,7 @@ Product.init({
 		validate: {
 			isInt: true,
 		}
-	}
+	},
 }, {
 	sequelize: conn,
 	modelName: 'product',
