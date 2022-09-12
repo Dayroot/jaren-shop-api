@@ -15,9 +15,9 @@ const ProductService = require('./product.service');
 
 class PerfumeService {
 
-	static add = async (brand, name, description, stock, images, gender, perfumePrices) => {
+	static add = async (brandId, name, description, stock, images, gender, perfumePrices) => {
 
-		const request = this._setRequestAdd({brand, name, description, stock, images, gender, perfumePrices});
+		const request = this._setRequestAdd({brandId, name, description, stock, images, gender, perfumePrices});
 		const perfumeInstance =  await Perfume.create(
 			request,
 			{
@@ -121,7 +121,7 @@ class PerfumeService {
 
 	}
 
-	static _setRequestAdd = ({brand, name, description, stock, images, gender, perfumePrices}) => (
+	static _setRequestAdd = ({brandId, name, description, stock, images, gender, perfumePrices}) => (
 		{
 			gender,
 			perfumePrices,
@@ -130,7 +130,7 @@ class PerfumeService {
 				description,
 				stock,
 				images,
-				brandId: brand.id,
+				brandId,
 			}
 		}
 	);
