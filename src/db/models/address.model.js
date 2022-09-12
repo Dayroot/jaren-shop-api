@@ -53,7 +53,8 @@ const Address = conn.define( 'address', {
 			isAlphaVerbose,
 		}
 	},
-
+}, {
+	timestamps: false,
 });
 
 
