@@ -4,6 +4,10 @@ const conn = require('../connectionDB');
 //Custom Validations
 const {isString, isAlphaVerbose} = require('../../utils/customValidations');
 
+//Models
+const WishList = require('./wishList.model');
+const ShoppingCart = require('./shoppingCart.model');
+
 const User = conn.define( 'user', {
 	firstName: {
 		type: DataTypes.STRING,
@@ -34,7 +38,27 @@ const User = conn.define( 'user', {
 		}
 	}
 }, {
-	timestamps: false,
+	timestamps: true,
+	updatedAt: false,
+	createdAt: 'registrationDate',
+	scopes: {
+		format: {
+			include: [
+				{
+					model: WishList,
+					attributes: {
+						exclude: ['userId'],
+					}
+				},
+				{
+					model: ShoppingCart,
+					attributes: {
+						exclude: ['userId'],
+					}
+				},
+			]
+		}
+	}
 });
 
 
