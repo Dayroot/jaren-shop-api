@@ -12,8 +12,12 @@ class DiscountService {
 		return discounts.map( discount => discount.toJSON());
 	}
 
-	static find = async () => {
-		const discounts = await Discount.findAll();
+	static find = async (params) => {
+		let searchRequest = {};
+		if(typeof params === 'object' && Object.keys(params).length !== 0){
+			searchRequest.where = params;
+		}
+		const discounts = await Discount.findAll(searchRequest);
 		if(!Array.isArray(discounts)) return [];
 		return discounts.map( discount => discount.toJSON());
 	}
