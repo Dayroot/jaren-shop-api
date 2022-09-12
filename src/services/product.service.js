@@ -9,9 +9,14 @@ const BrandService = require('./brand.service');
 
 class ProductService {
 
-	static add = async (brand, name, description, stock, images) => {
-		const request = this._setRequestAdd({brand, name, description, stock, images});
-		const productInstance = await Product.create( request, {
+	static add = async (brandId, name, description, stock, images) => {
+		const productInstance = await Product.create({
+			brandId,
+			name,
+			description,
+			stock,
+			images
+		}, {
 			include: {
 				model: ProductImage,
 				as: 'images',
@@ -22,8 +27,7 @@ class ProductService {
 	}
 
 	static bulkAdd = async (productsData) => {
-		const requestArray = productsData.map(data => this._setRequestAdd( data ));
-		const productInstances = await Product.bulkCreate(requestArray, {
+		const productInstances = await Product.bulkCreate(productsData, {
 			include: {
 				model: ProductImage,
 				as: 'images',
@@ -59,15 +63,6 @@ class ProductService {
 		return await Product.destroy({where: {id}});
 	}
 
-	static _setRequestAdd = ({brand, name, description, stock, images}) => (
-		{
-			name,
-			description,
-			stock,
-			images,
-			brandId: brand.id,
-		}
-	);
 }
 
 module.exports = ProductService;
