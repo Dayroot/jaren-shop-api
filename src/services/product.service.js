@@ -1,11 +1,8 @@
+const boom = require('@hapi/boom');
+
 //Models
-const Brand = require('../db/models/brand.model');
 const Product = require('../db/models/product.model');
 const ProductImage = require('../db/models/productImage.model');
-
-//Services
-const BrandService = require('./brand.service');
-
 
 class ProductService {
 
@@ -22,7 +19,7 @@ class ProductService {
 				as: 'images',
 			},
 		});
-
+		if(!(productInstance instanceof Product)) throw boom.badImplementation('Unexpected error');
 		return await this.findOne(productInstance.id);
 	}
 
@@ -33,7 +30,7 @@ class ProductService {
 				as: 'images',
 			},
 		});
-		if(!Array.isArray(productInstances)) return [];
+		if(!Array.isArray(productInstances)) throw boom.badImplementation('Unexpected error');
 		const productIds = productInstances.map(product => product.id);
 		return await this.find({id: productIds});
 	}
@@ -44,23 +41,29 @@ class ProductService {
 			searchRequest.where = params;
 		}
 		const products = await Product.scope('format').findAll(searchRequest);
-		if(!Array.isArray(products)) return [];
+		if(!Array.isArray(products)) throw boom.badImplementation('Unexpected error');
 		return products.map( product => product.toJSON() );
 	}
 
 
 	static findOne = async (id) => {
 		const product = await Product.scope('format').findByPk(id);
+		if( product === null ) throw boom.notFound('Product not found');
 		return product.toJSON();
 	}
 
 	static update = async (id, newData) => {
-		await Product.update(newData, {where: {id}});
+		const res = await Product.update(newData, {where: {id}});
+		if(res === null) throw boom.badImplementation('Unexpected error');
+		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The id or data is not valid");
 		return await this.findOne(id);
 	}
 
 	static delete = async (id) => {
-		return await Product.destroy({where: {id}});
+		const res = await Product.destroy({where: {id}});
+		if(res === null) throw boom.badImplementation('Unexpected error');
+		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The id is not valid");
+		return res;
 	}
 
 }

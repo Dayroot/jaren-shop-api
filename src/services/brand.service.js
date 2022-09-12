@@ -1,3 +1,5 @@
+const boom = require('@hapi/boom');
+
 //Models
 const Brand = require('../db/models/brand.model');
 
@@ -5,11 +7,13 @@ class BrandService {
 
 	static add = async (name, logoUrl) => {
 		const brand = await Brand.create({name, logoUrl});
+		if(!(brand instanceof Brand)) throw boom.badImplementation('Unexpected error');
 		return brand.toJSON();
 	}
 
 	static bulkAdd = async (dataArray) => {
 		const brands = await Brand.bulkCreate(dataArray);
+		if(!Array.isArray(brands)) throw boom.badImplementation('Unexpected error');
 		return brands.map( brand => brand.toJSON());
 	}
 
@@ -19,34 +23,41 @@ class BrandService {
 			searchRequest.where = params;
 		}
 		const brands = await Brand.findAll(searchRequest);
-		if(!Array.isArray(brands)) return [];
+		if(!Array.isArray(brands)) throw boom.badImplementation('Unexpected error');
 		return brands.map( brand => brand.toJSON());
 	}
 
 	static findOrCreate = async (name, logoUrl) => {
-		const result =  await Brand.findOrCreate({
+		const brand =  await Brand.findOrCreate({
 			where: {name},
 			defaults: {
 				logoUrl,
 			}
 		});
-		return result[0].toJSON();
+		if(!(brand[0] instanceof Brand)) throw boom.badImplementation('Unexpected error');
+		return brand[0].toJSON();
 	}
 
 	static findOne = async (id) => {
 		const brand = await Brand.findByPk(id);
+		if( brand === null ) throw boom.notFound('Brand not found');
 		return brand.toJSON();
 	}
 
 	static update = async (id, newData) => {
-		await Brand.update({...newData}, {
+		const res = await Brand.update({...newData}, {
 			where: {id}
 		});
+		if(res === null) throw boom.badImplementation('Unexpected error');
+		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The id or data is not valid");
 		return await this.findOne(id);
 	}
 
 	static delete = async (id) => {
-		return await Brand.destroy({where: {id}});
+		const res = await Brand.destroy({where: {id}});
+		if(res === null) throw boom.badImplementation('Unexpected error');
+		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The id is not valid");
+		return res;
 	}
 
 }

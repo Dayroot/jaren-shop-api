@@ -1,5 +1,4 @@
 const boom = require('@hapi/boom');
-const { QueryTypes } = require('sequelize');
 
 //Database connection
 const conn = require('../db/connectionDB');
@@ -35,7 +34,7 @@ class PerfumeService {
 				]
 			}
 		);
-
+		if(!(perfumeInstance instanceof Perfume)) throw boom.badImplementation('Unexpected error');
 		return await this.findOne(perfumeInstance.id);
 	}
 
@@ -59,12 +58,14 @@ class PerfumeService {
 				]
 			}
 		);
+		if(!Array.isArray(perfumeInstances)) throw boom.badImplementation('Unexpected error');
 		const productIds = perfumeInstances.map(perfume => perfume.product.id);
 		return await this.find({productId: productIds});
 	}
 
 	static findOne = async (id) => {
 		const perfume = await Perfume.scope('format').findOne({where: {productId: id}});
+		if( perfume === null ) throw boom.notFound('Perfume not found');
 		return this._formatData(perfume);
 	}
 
@@ -74,12 +75,15 @@ class PerfumeService {
 			searchRequest.where = params;
 		}
 		const perfumes = await Perfume.scope('format').findAll(searchRequest);
-		if(!Array.isArray(perfumes)) return [];
+		if(!Array.isArray(perfumes)) throw boom.badImplementation('Unexpected error');
 		return perfumes.map( perfume => this._formatData(perfume));
 	}
 
 	static delete = async (id) => {
-		return await Product.destroy({where: {id}});
+		const res = await Product.destroy({where: {id}});
+		if(res === null) throw boom.badImplementation('Unexpected error');
+		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The id is not valid");
+		return res;
 	}
 
 	static update = async (id, newData) => {
@@ -102,11 +106,8 @@ class PerfumeService {
 				});
 			}
 		});
-		const result = await Perfume.scope('format').findOne ({
-			where: {productId: id},
-		});
 
-		return this._formatData(result);
+		return await this.findOne(id);
 	}
 
 	static _getParams = (params) => {
