@@ -16,35 +16,38 @@ const ProductModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 
 const ProductService = require(path.resolve(process.cwd(), 'src', 'services', 'product.service.js'));
 const BrandService = require(path.resolve(process.cwd(), 'src', 'services', 'brand.service.js'));
 
+const brandsData = [
+	{
+		name: "DIOR",
+		logoUrl: "http://diorlogo.png",
+	},
+	{
+		name: "CHANEL",
+		logoUrl: "http://chanellogo.png",
+	},
+	{
+		name: "YVES SAINT LAURENT",
+		logoUrl: "http://ivessaintlaurentlogo.png",
+	},
+];
+
 const productsData = [
 	{
-		brand: {
-			id: 1,
-			name: "DIOR",
-			logoUrl: "http://diorlogo.png",
-		},
+		brandId: 1,
 		name: "Sauvage",
 		description: "The strong gust of Citrus in Sauvage Eau de Toilette is powerfully.",
 		stock: 213,
 		images: [{url:"http://suavage1.png"}, {url:"http://suavage2.png"}, {url:"http://suavage3.png"}],
 	},
 	{
-		brand: {
-			id: 2,
-			name: "CHANEL",
-			logoUrl: "http://chanellogo.png",
-		},
+		brandId: 2,
 		name: "BLEU DE CHANEL",
 		description: "An ode to masculine freedom expressed in an aromatic-woody fragrance with a captivating trail.",
 		stock: 140,
 		images: [{url:"http://blue1.png"}, {url:"http://blue2.png"}, {url:"http://blue3.png"}],
 	},
 	{
-		brand: {
-			id: 3,
-			name: "YVES SAINT LAURENT",
-			logoUrl: "http://ivessaintlaurentlogo.png",
-		},
+		brandId: 3,
 		name: "Black Opium",
 		description: "The original Eau de Parfum. Featuring black coffee and sensual vanilla. Addictive and energising.",
 		stock: 451,
@@ -56,12 +59,6 @@ describe('Products service', () => {
 
 	beforeEach( async () => {
 		await migration();
-		const brandsData = productsData.map( product => {
-			return {
-				name: product.brand.name,
-				logoUrl: product.brand.logoUrl,
-			}
-		});
 		await BrandService.bulkAdd(brandsData);
 	});
 
@@ -88,7 +85,7 @@ describe('Products service', () => {
 
 		products.forEach( (product, i) => {
 			expect(product.id).toBe(i + 1);
-			expect( product.brand.name ).toBe(productsData[i].brand.name);
+			expect( product.brand.name ).toBe(brandsData[i].name);
 			expect( product.images.length ).toBe(3);
 			expect( Object.keys(product).sort()).toEqual(['brand', 'name', 'description', 'stock', 'images',  'discountId', 'id'].sort());
 		});

@@ -10,20 +10,29 @@ dotenv.config (
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
 const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
-//Models
-const PerfumeModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'perfume.model.js'));
 
 //Services
 const PerfumeService = require(path.resolve(process.cwd(), 'src', 'services', 'perfume.service.js'));
 const BrandService = require(path.resolve(process.cwd(), 'src', 'services', 'brand.service.js'));
 
+const brandsData = [
+	{
+		name: "DIOR",
+		logoUrl: "http://diorlogo.png",
+	},
+	{
+		name: "CHANEL",
+		logoUrl: "http://chanellogo.png",
+	},
+	{
+		name: "YVES SAINT LAURENT",
+		logoUrl: "http://ivessaintlaurentlogo.png",
+	},
+];
+
 const perfumesData = [
 	{
-		brand: {
-			id: 1,
-			name: "DIOR",
-			logoUrl: "http://diorlogo.png",
-		},
+		brandId: 1,
 		name: "Sauvage",
 		description: "The strong gust of Citrus in Sauvage Eau de Toilette is powerfully.",
 		stock: 213,
@@ -32,11 +41,7 @@ const perfumesData = [
 		perfumePrices: [{size:30, price: 650.01}, {size:60, price: 650.01}, {size:100, price: 649.99}],
 	},
 	{
-		brand: {
-			id: 2,
-			name: "CHANEL",
-			logoUrl: "http://chanellogo.png",
-		},
+		brandId: 2,
 		name: "BLEU DE CHANEL",
 		description: "An ode to masculine freedom expressed in an aromatic-woody fragrance with a captivating trail.",
 		stock: 140,
@@ -46,11 +51,7 @@ const perfumesData = [
 
 	},
 	{
-		brand: {
-			id: 3,
-			name: "YVES SAINT LAURENT",
-			logoUrl: "http://ivessaintlaurentlogo.png",
-		},
+		brandId: 3,
 		name: "Black Opium",
 		description: "The original Eau de Parfum. Featuring black coffee and sensual vanilla. Addictive and energising.",
 		stock: 451,
@@ -64,12 +65,6 @@ describe('Perfume Service', () => {
 
 	beforeEach( async () => {
 		await migration();
-		const brandsData = perfumesData.map( product => {
-			return {
-				name: product.brand.name,
-				logoUrl: product.brand.logoUrl,
-			}
-		});
 		await BrandService.bulkAdd(brandsData);
 	});
 
@@ -96,7 +91,7 @@ describe('Perfume Service', () => {
 
 		perfumes.forEach( (perfume, i) => {
 			expect(perfume.id).toBe(i + 1);
-			expect( perfume.brand.name ).toBe(perfumesData[i].brand.name);
+			expect( perfume.brand.name ).toBe(brandsData[i].name);
 			expect( perfume.images.length ).toBe(3);
 			expect( Object.keys(perfume).sort()).toEqual(['brand', 'name', 'description', 'stock', 'images', 'gender', 'perfumePrices', 'discountId', 'id'].sort());
 		});
@@ -121,7 +116,7 @@ describe('Perfume Service', () => {
 
 		perfumes.forEach( (perfume, i) => {
 			expect(perfume.id).toBe(perfumesCreated[i].id);
-			expect( perfume.brand.name ).toBe(perfumesCreated[i].brand.name);
+			expect( perfume.brand.name ).toBe(brandsData[i].name);
 			expect( perfume.images.length ).toBe(3);
 			expect( Object.keys(perfume).sort()).toEqual(['brand', 'name', 'description', 'stock', 'images', 'gender', 'perfumePrices', 'discountId', 'id'].sort());
 		});
