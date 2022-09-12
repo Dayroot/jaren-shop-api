@@ -19,7 +19,7 @@ const Review = conn.define( 'review', {
 		}
 	}
 }, {
-	timestamps: false,
+	timestamps: true,
 });
 
 module.exports = Review;
