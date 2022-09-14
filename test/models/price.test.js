@@ -46,5 +46,11 @@ describe( 'Price model', () => {
 			.then( () => done("The record should not have been created"))
 			.catch( () => done());
 		});
+
+		it("If the parameters are correct, the record will be created", (done) => {
+			PriceModel.create({ size: "100ml", value: 50.00 })
+			.then( () => done())
+			.catch( () => done("The record should have been created"));
+		});
 	});
 });

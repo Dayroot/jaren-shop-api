@@ -57,7 +57,13 @@ describe( 'Discount model', () => {
 			const discount = await DiscountModel.create({ value: 30, finishDate });
 			expect(discount instanceof DiscountModel).toBeTruthy();
 			expect(discount.isEnabled).toBeTruthy();
+		});
 
+		it("If the parameters are correct, the record is created", (done) => {
+			const finishDate = (new Date()).toISOString();
+			DiscountModel.create({ value: 30, isEnabled: true, finishDate })
+				.then( () => done())
+				.catch( () => done("The record should have been created") );
 		});
 	});
 });

@@ -54,5 +54,12 @@ describe( 'Review model', () => {
 			.catch( () => done());
 		});
 
+		it("if the parameters are correct, the record will be created",
+		(done) => {
+			ReviewModel.create({rating: 2, text: "any text"})
+			.then( () => done())
+			.catch( () => done("The record should have been created"));
+		});
+
 	});
 });

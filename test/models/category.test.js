@@ -34,5 +34,11 @@ describe( 'Category model', () => {
 			.then( () => done("The record should not have been created"))
 			.catch( () => done());
 		});
+
+		it("If the parameters are correct, the record will be created", (done) => {
+			CategoryModel.create({name: "any name"})
+			.then( () => done())
+			.catch( () => done("The record should have been created"));
+		});
 	});
 });

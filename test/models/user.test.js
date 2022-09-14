@@ -107,5 +107,16 @@ describe('User model', () => {
 			.then( () => done("The record should not have been created"))
 			.catch( () => done());
 		});
+
+		it("If the parameters are correct, the record will be created", (done) => {
+			UserModel.create({
+				firstName: "firstname",
+				lastName: "lastname",
+				email: "test@test.com",
+				password: "12345",
+			})
+			.then( () => done())
+			.catch( () => done("The record should have been created"));
+		});
 	});
 });

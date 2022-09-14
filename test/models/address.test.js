@@ -239,5 +239,19 @@ describe('Address model', () => {
 			.then( () => done("The record should not have been created"))
 			.catch( () => done());
 		});
+
+		it('If the parameters is correct, the record will be created', (done) => {
+			AddressModel.create({
+				city: "Any city",
+				state: "Any state",
+				streetAddress: "av 5a #87 center",
+				postalCode: "515005",
+				propertyType: "house",
+				phoneNumber: "3104895230",
+				fullname: "Helena Black",
+			})
+			.then( () => done())
+			.catch( () => done("The record should have been created"));
+		});
 	});
 });

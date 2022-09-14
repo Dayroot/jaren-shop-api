@@ -52,15 +52,21 @@ describe('Brand model', () => {
 		});
 
 		it("If the logoUrl property is not an image url, the record should not be created", (done) => {
-			BrandModel.create({ logoUrl: "http://image" })
+			BrandModel.create({ name: "Any name", logoUrl: "http://image" })
 				.then( () => done("The record should not have been created"))
 				.catch( () => done());
 		});
 
 		it("If the logoUrl property is not an image url, the record should not be created", (done) => {
-			BrandModel.create({ logoUrl: "image.png" })
+			BrandModel.create({ name: "Any name", logoUrl: "image.png" })
 				.then( () => done("The record should not have been created"))
 				.catch( () => done());
+		});
+
+		it("If the parameters are correct, the record should be created", (done) => {
+			BrandModel.create({ name: "Any name", logoUrl: "http://image.png" })
+				.then( () => done())
+				.catch( () => done("The record should not have been created"));
 		});
 
 	});
