@@ -4,6 +4,9 @@ const conn = require('../connectionDB');
 //Custom Validations
 const {isString} = require('../../utils/customValidations');
 
+//Models
+const User = require('./user.model');
+
 const Review = conn.define( 'review', {
 	rating: {
 		type: DataTypes.SMALLINT,
@@ -20,6 +23,21 @@ const Review = conn.define( 'review', {
 	}
 }, {
 	timestamps: true,
+	scopes: {
+		format: {
+			attributes: {
+				exclude: [ "purchaseProductRef", "userId" ],
+			},
+			include: [
+				{
+					model: User,
+					attributes: {
+						exclude: ['email', 'password', 'registrationDate'],
+					}
+				}
+			]
+		}
+	}
 });
 
 module.exports = Review;

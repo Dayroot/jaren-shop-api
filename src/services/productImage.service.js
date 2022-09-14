@@ -17,9 +17,9 @@ class ProductImageService {
 		return images.map(image => image.toJSON());
 	}
 
-	static find = async (params) => {
+	static find = async (params = null) => {
 		let searchRequest = {};
-		if(typeof params === 'object' && Object.keys(params).length !== 0){
+		if(params && Object.keys(params).length !== 0){
 			searchRequest.where = params;
 		}
 		const images = await ProductImage.findAll(searchRequest);
@@ -45,7 +45,7 @@ class ProductImageService {
 	static delete = async (id) => {
 		const res = await ProductImage.destroy({where: {id}});
 		if(res === null) throw boom.badImplementation('Unexpected error');
-		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The id is not valid");
+		if(res === 0) throw boom.badRequest("The id is not valid");
 		return res;
 	}
 }

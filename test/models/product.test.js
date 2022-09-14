@@ -25,37 +25,49 @@ describe('Product model', () => {
 
 	describe('Validations', () => {
 		it("If the name property is null, the record is not created", (done) => {
-			ProductModel.create({description:"Any text"})
+			ProductModel.create({description:"Any text", gender:"men"})
+				.then(() => done("The record should not have been created"))
+				.catch(() => done());
+		});
+
+		it("If the gender property is null, the record is not created", (done) => {
+			ProductModel.create({name:"Any name", description:"Any text"})
+				.then(() => done("The record should not have been created"))
+				.catch(() => done());
+		});
+
+		it("If the gender property value is diferent a string type, the record is not created", (done) => {
+			ProductModel.create({name: "Any name", description:"Any text", gender: 6})
 				.then(() => done("The record should not have been created"))
 				.catch(() => done());
 		});
 
 		it("If the stock property value is diferent a integer type, the record is not created", (done) => {
-			ProductModel.create({name: "Any name", description:"Any text", stock: "test"})
+			ProductModel.create({name: "Any name", description:"Any text", stock: "test", gender:"men"})
 				.then(() => done("The record should not have been created"))
 				.catch(() => done());
 		});
 
 		it("If the description property is null, the record is not created", (done) => {
-			ProductModel.create({name: "Any name"})
+			ProductModel.create({name: "Any name", gender:"men"})
 				.then(() => done("The record should not have been created"))
 				.catch( () => done() );
 		});
 
 		it("If the description property is not string type, the record is not created", (done) => {
-			ProductModel.create({name: "Any name", description: 8})
+			ProductModel.create({name: "Any name", description: 8, gender:"men"})
 				.then(() => done("The record should not have been created"))
 				.catch( () => done());
 		});
 
 		it("If the name property is not string type, the record is not created", (done) => {
-			ProductModel.create({name: 8, description: "Any description"})
+			ProductModel.create({name: 8, description: "Any description", gender:"men"})
 				.then(() => done("The record should not have been created"))
 				.catch( () => done());
 		});
 
 		it("If the name property is not alphanumeric, the record is not created", (done) => {
-			ProductModel.create({name: "@-/", description: "Any description"})
+			ProductModel.create({name: "@-/", description: "Any description", gender:"men"})
 				.then(() => done("The record should not have been created"))
 				.catch( () => done());
 		});

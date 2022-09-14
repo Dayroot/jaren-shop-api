@@ -3,8 +3,7 @@ const conn = require('./connectionDB');
 
 //Models
 const Product = require('./models/product.model');
-const Perfume = require('./models/perfume.model');
-const PerfumePrice = require('./models/perfumePrice.model');
+const Price = require('./models/price.model');
 const Brand = require('./models/brand.model');
 const Discount = require('./models/discount.model');
 const ProductImage = require('./models/productImage.model');
@@ -17,19 +16,20 @@ const Address = require('./models/address.model');
 const ShoppingCart_Product = require('./models/shoppingCart_product.model');
 const Purchase_Product = require('./models/purchase_product.model');
 const WishList_Product = require('./models/wishList_product.model');
+const Category = require('./models/category.model');
 
 const associations = async () => {
 	try {
 
 		if(Object.values(Product.associations).length === 0) {
 
-			Perfume.hasMany(PerfumePrice, {
+			Product.hasMany(Price, {
 				onDelete: 'CASCADE',
 			});
-			PerfumePrice.belongsTo(Perfume);
+			Price.belongsTo(Product);
 
-			Product.hasOne(Perfume);
-			Perfume.belongsTo(Product);
+			Category.hasMany(Product);
+			Product.belongsTo(Category);
 
 			Brand.hasMany(Product, {
 				onDelete: 'CASCADE',
@@ -59,6 +59,12 @@ const associations = async () => {
 				onDelete: 'CASCADE',
 			});
 			Review.belongsTo(Product);
+
+			Purchase_Product.hasOne(Review, {foreignKey: {
+				name: 'ref',
+				unique: true,
+			}});
+			Review.belongsTo(Purchase_Product);
 
 			User.hasOne(ShoppingCart, {
 				onDelete: 'CASCADE',
@@ -96,7 +102,6 @@ const associations = async () => {
 
 		//Sync changes
 		await conn.sync({force: true,});
-
 
 	} catch (error) {
 		console.error(error);

@@ -1,8 +1,10 @@
 const {DataTypes} = require('sequelize');
 const conn = require('../connectionDB');
 
-const PerfumePrice = conn.define('perfumePrice', {
-	price: {
+const {isString} = require('../../utils/customValidations');
+
+const Price = conn.define('price', {
+	value: {
 		type: DataTypes.FLOAT,
 		allowNull: false,
 		validate: {
@@ -10,10 +12,10 @@ const PerfumePrice = conn.define('perfumePrice', {
 		}
 	},
 	size: {
-		type: DataTypes.FLOAT,
+		type: DataTypes.STRING,
 		allowNull: false,
 		validate: {
-			isNumeric: true,
+			isString
 		}
 	},
 }, {
@@ -21,4 +23,4 @@ const PerfumePrice = conn.define('perfumePrice', {
 });
 
 
-module.exports = PerfumePrice;
+module.exports = Price;

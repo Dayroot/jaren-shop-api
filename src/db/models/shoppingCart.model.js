@@ -5,6 +5,8 @@ const Product = require('./product.model');
 const ShoppingCart_Product = require('./shoppingCart_product.model');
 const Brand = require('./brand.model');
 const ProductImage = require('./productImage.model');
+const Category = require('./category.model');
+const Price = require('./price.model');
 
 const ShoppingCart = conn.define('shoppingCart', {}, {
 	timestamps: false,
@@ -27,10 +29,19 @@ const ShoppingCart = conn.define('shoppingCart', {}, {
 							attributes: {
 								exclude: ['productId']
 							},
+						},
+						{
+							model: Price,
+							attributes: {
+								exclude: ['productId']
+							}
+						},
+						{
+							model: Category,
 						}
 					],
 					attributes: {
-						exclude: ['brandId']
+						exclude: ['brandId', 'categoryId']
 					},
 				}
 			},

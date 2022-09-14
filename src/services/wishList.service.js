@@ -24,7 +24,7 @@ class wishListService {
 	static deleteProduct = async (wishListId, ref) => {
 		const res = await WishList_Product.destroy({where: {ref}});
 		if(res === null) throw boom.badImplementation('Unexpected error');
-		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The ref is not valid");
+		if(res === 0) throw boom.badRequest("The ref is not valid");
 		return await this.findOne(wishListId);
 	}
 

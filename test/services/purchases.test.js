@@ -13,6 +13,7 @@ const UserService = require(path.resolve(process.cwd(), 'src', 'services', 'user
 const BrandService = require(path.resolve(process.cwd(), 'src', 'services', 'brand.service.js'));
 const ProductService = require(path.resolve(process.cwd(), 'src', 'services', 'product.service.js'));
 const PurchaseService = require(path.resolve(process.cwd(), 'src', 'services', 'purchase.service.js'));
+const CategoryService = require(path.resolve(process.cwd(), 'src', 'services', 'category.service.js'));
 
 const userData = {
 	firstName: 'Juanito',
@@ -28,6 +29,9 @@ const productsData = [
 		description: "The strong gust of Citrus in Sauvage Eau de Toilette is powerfully.",
 		stock: 213,
 		images: [{url:"http://suavage1.png"}, {url:"http://suavage2.png"}, {url:"http://suavage3.png"}],
+		gender: 'men',
+		prices: [{size:"30", value: 650.01}, {size:"60", value: 650.01}, {size:"100", value: 649.99}],
+		categoryId: 1,
 	},
 	{
 		brandId: 1,
@@ -35,6 +39,9 @@ const productsData = [
 		description: "An ode to masculine freedom expressed in an aromatic-woody fragrance with a captivating trail.",
 		stock: 140,
 		images: [{url:"http://blue1.png"}, {url:"http://blue2.png"}, {url:"http://blue3.png"}],
+		gender: 'men',
+		prices: [{size:"60", value: 850.00}, {size:"100", value: 1350.00}, {size:"200", value: 2799.99}],
+		categoryId: 1,
 	},
 	{
 		brandId: 1,
@@ -42,6 +49,9 @@ const productsData = [
 		description: "The original Eau de Parfum. Featuring black coffee and sensual vanilla. Addictive and energising.",
 		stock: 451,
 		images: [{url:"http://opium1.png"}, {url:"http://opium2.png"}, {url:"http://opium3.png"}],
+		gender: 'woman',
+		prices: [{size:"80", value: 1199.99}, {size:"100", value: 1999.99}, {size:"200", value: 3400.00}],
+		categoryId: 1,
 	}
 ];
 
@@ -101,6 +111,7 @@ describe('Purchase service', () => {
 		await migration();
 		await UserService.add(...Object.values(userData));
 		await BrandService.add(...Object.values(brandData));
+		await CategoryService.add('perfumes');
 		await ProductService.bulkAdd(productsData);
 	});
 
@@ -120,7 +131,7 @@ describe('Purchase service', () => {
 			expect(Object.keys(item).sort()).toEqual(['ref',  'quantity', 'overview', 'product'].sort());
 			expect(item.quantity).toBe(purchasesData[0].purchase_products[i].quantity);
 			expect(typeof item.product).toBe('object');
-			expect(Object.keys(item.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock'].sort());
+			expect(Object.keys(item.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock', 'gender', 'prices', 'category'].sort());
 			expect(item.product.name).toBe(productsData[i].name);
 			expect(item.product.description).toBe(productsData[i].description);
 			expect(item.product.stock).toBe(productsData[i].stock);
@@ -140,7 +151,7 @@ describe('Purchase service', () => {
 			expect(Object.keys(item).sort()).toEqual(['ref',  'quantity', 'overview', 'product'].sort());
 			expect(item.quantity).toBe(purchasesData[0].purchase_products[i].quantity);
 			expect(typeof item.product).toBe('object');
-			expect(Object.keys(item.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock'].sort());
+			expect(Object.keys(item.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock', 'gender', 'prices', 'category'].sort());
 			expect(item.product.name).toBe(productsData[i].name);
 			expect(item.product.description).toBe(productsData[i].description);
 			expect(item.product.stock).toBe(productsData[i].stock);
@@ -162,7 +173,7 @@ describe('Purchase service', () => {
 				expect(typeof item).toBe('object');
 				expect(Object.keys(item).sort()).toEqual(['ref',  'quantity', 'overview', 'product'].sort());
 				expect(typeof item.product).toBe('object');
-				expect(Object.keys(item.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock'].sort());
+				expect(Object.keys(item.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock', 'gender', 'prices', 'category'].sort());
 				expect(item.product.name).toBe(productsData[i].name);
 				expect(item.product.description).toBe(productsData[i].description);
 				expect(item.product.stock).toBe(productsData[i].stock);
@@ -187,7 +198,7 @@ describe('Purchase service', () => {
 				expect(typeof item).toBe('object');
 				expect(Object.keys(item).sort()).toEqual(['ref',  'quantity', 'overview', 'product'].sort());
 				expect(typeof item.product).toBe('object');
-				expect(Object.keys(item.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock'].sort());
+				expect(Object.keys(item.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock', 'gender', 'prices', 'category'].sort());
 				expect(item.product.name).toBe(productsData[i].name);
 				expect(item.product.description).toBe(productsData[i].description);
 				expect(item.product.stock).toBe(productsData[i].stock);

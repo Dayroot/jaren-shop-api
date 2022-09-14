@@ -6,6 +6,8 @@ const Product = require('./product.model');
 const Brand = require('./brand.model');
 const ProductImage = require('./productImage.model');
 const Purchase_Product = require('./purchase_product.model');
+const Category = require('./category.model');
+const Price = require('./price.model');
 
 const Purchase = conn.define( 'purchase', {
 	status: {
@@ -35,10 +37,19 @@ const Purchase = conn.define( 'purchase', {
 							attributes: {
 								exclude: ['productId']
 							},
+						},
+						{
+							model: Price,
+							attributes: {
+								exclude: ['productId']
+							}
+						},
+						{
+							model: Category,
 						}
 					],
 					attributes: {
-						exclude: ['brandId']
+						exclude: ['brandId', 'categoryId']
 					},
 				}
 			}

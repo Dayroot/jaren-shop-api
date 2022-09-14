@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const routes = require('./routes');
-const {logErrors, errorHandler} = require('./middlewares/error.handler');
+const {logErrors, errorHandler, boomErrorHandler} = require('./middlewares/error.handler');
 
 const app = express();
 
@@ -13,9 +13,11 @@ const mode = process.env.MODE;
 
 if(mode === 'DEVELOPMENT' || mode === 'TEST') {
 	app.use(logErrors);
-	app.use(errorHandler);
 	app.use(morgan('tiny'));
 }
+
+app.use(boomErrorHandler);
+app.use(errorHandler);
 
 //REST API Routes
 routes(app);
