@@ -3,7 +3,7 @@ const boom = require('@hapi/boom');
 //Models
 const Purchase = require('../db/models/purchase.model');
 const Purchase_Product = require('../db/models/purchase_product.model');
-
+const OrderAddress = require('../db/models/orderAddress.model');
 class PurchaseService {
 
 	static findOne = async (id) => {
@@ -12,13 +12,22 @@ class PurchaseService {
 		return purchase.toJSON();
 	}
 
-	static add = async (userId, status, purchase_products) => {
+	static add = async (userId, address, status, purchase_products) => {
 		const purchase = await Purchase.create( {
 			userId,
+			address,
 			status,
 			purchase_products,
 		}, {
-			include: Purchase_Product,
+			include: [
+				{
+					model: Purchase_Product
+				},
+				{
+					model: OrderAddress,
+					as: 'address',
+				}
+			],
 		});
 		if(!(purchase instanceof Purchase)) throw boom.badImplementation('Unexpected error');
 		return await this.findOne(purchase.id);
@@ -26,7 +35,15 @@ class PurchaseService {
 
 	static bulkAdd = async (purchasesData) => {
 		const purchases = await Purchase.bulkCreate(purchasesData, {
-			include: Purchase_Product,
+			include: [
+				{
+					model: Purchase_Product
+				},
+				{
+					model: OrderAddress,
+					as: 'address',
+				}
+			],
 		});
 		if(!Array.isArray(purchases)) throw boom.badImplementation('Unexpected error');
 		const purchasesId = purchases.map(purchase => purchase.id);
