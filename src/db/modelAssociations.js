@@ -17,6 +17,7 @@ const ShoppingCart_Product = require('./models/shoppingCart_product.model');
 const Purchase_Product = require('./models/purchase_product.model');
 const WishList_Product = require('./models/wishList_product.model');
 const Category = require('./models/category.model');
+const OrderAddress = require('./models/orderAddress.model');
 
 const associations = async () => {
 	try {
@@ -80,6 +81,9 @@ const associations = async () => {
 				onDelete: 'CASCADE',
 			});
 			Purchase.belongsTo(User);
+
+			Purchase.hasOne(OrderAddress, {as: 'address'});
+			OrderAddress.belongsTo(Purchase);
 
 			ShoppingCart.hasMany(ShoppingCart_Product);
 			ShoppingCart_Product.belongsTo(ShoppingCart);
