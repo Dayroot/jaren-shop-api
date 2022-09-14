@@ -63,6 +63,15 @@ const brandData = {
 const purchasesData = [
 	{
 		userId: 1,
+		address: {
+			state: 'Norte de santander',
+			city: 'Cucuta',
+			streetAddress: 'avenida 1a #85d barrio Caobos',
+			postalCode: '530001',
+			propertyType: 'house',
+			phoneNumber: '3164578632',
+			fullname: 'Helena Blade',
+		},
 		status: 'pending',
 		purchase_products: [
 			{
@@ -84,6 +93,15 @@ const purchasesData = [
 	},
 	{
 		userId: 1,
+		address: {
+			state: 'Norte de santander',
+			city: 'Cucuta',
+			streetAddress: 'avenida 1a #85d barrio Caobos',
+			postalCode: '530001',
+			propertyType: 'house',
+			phoneNumber: '3164578632',
+			fullname: 'Helena Blade',
+		},
 		status: 'pending',
 		purchase_products: [
 			{
@@ -103,7 +121,7 @@ const purchasesData = [
 			}
 		],
 	},
-]
+];
 
 describe('Purchase service', () => {
 
@@ -123,7 +141,11 @@ describe('Purchase service', () => {
 		const purchase = await PurchaseService.add(...Object.values(purchasesData[0]));
 
 		expect(typeof purchase).toBe('object');
-		expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products'].sort());
+		expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products', 'address'].sort());
+
+		expect(typeof purchase.address).toBe('object');
+		expect(Object.keys(purchase.address).sort()).toEqual(['addressId', 'state', 'city', 'streetAddress', 'postalCode', 'propertyType', 'phoneNumber', 'fullname'].sort());
+
 		expect(Array.isArray(purchase.purchase_products)).toBeTruthy();
 
 		purchase.purchase_products.forEach( (item, i) => {
@@ -143,7 +165,11 @@ describe('Purchase service', () => {
 		const purchase = await PurchaseService.findOne(purchaseCreated.id);
 
 		expect(typeof purchase).toBe('object');
-		expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products'].sort());
+		expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products', 'address'].sort());
+
+		expect(typeof purchase.address).toBe('object');
+		expect(Object.keys(purchase.address).sort()).toEqual(['addressId', 'state', 'city', 'streetAddress', 'postalCode', 'propertyType', 'phoneNumber', 'fullname'].sort());
+
 		expect(Array.isArray(purchase.purchase_products)).toBeTruthy();
 
 		purchase.purchase_products.forEach( (item, i) => {
@@ -166,7 +192,10 @@ describe('Purchase service', () => {
 
 		purchases.forEach((purchase, j) => {
 			expect(typeof purchase).toBe('object');
-			expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products'].sort());
+			expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products', 'address'].sort());
+
+			expect(typeof purchase.address).toBe('object');
+			expect(Object.keys(purchase.address).sort()).toEqual(['addressId', 'state', 'city', 'streetAddress', 'postalCode', 'propertyType', 'phoneNumber', 'fullname'].sort());
 			expect(Array.isArray(purchase.purchase_products)).toBeTruthy();
 
 			purchase.purchase_products.forEach( (item, i) => {
@@ -191,7 +220,10 @@ describe('Purchase service', () => {
 
 		purchases.forEach((purchase, j) => {
 			expect(typeof purchase).toBe('object');
-			expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products'].sort());
+			expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products', 'address'].sort());
+
+			expect(typeof purchase.address).toBe('object');
+			expect(Object.keys(purchase.address).sort()).toEqual(['addressId', 'state', 'city', 'streetAddress', 'postalCode', 'propertyType', 'phoneNumber', 'fullname'].sort());
 			expect(Array.isArray(purchase.purchase_products)).toBeTruthy();
 
 			purchase.purchase_products.forEach( (item, i) => {
@@ -213,7 +245,7 @@ describe('Purchase service', () => {
 		});
 
 		expect(typeof purchase).toBe('object');
-		expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products'].sort());
+		expect(Object.keys(purchase).sort()).toEqual(['id', 'userId','purchaseDate', 'statusChangeDate', 'status', 'purchase_products', 'address'].sort());
 		expect(purchaseCreated.status).toBe('pending');
 		expect(purchase.status).toBe('dispatched');
 		expect(Array.isArray(purchase.purchase_products)).toBeTruthy();
