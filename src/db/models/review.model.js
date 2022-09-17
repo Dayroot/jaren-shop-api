@@ -26,7 +26,7 @@ const Review = conn.define( 'review', {
 	scopes: {
 		format: {
 			attributes: {
-				exclude: [ "purchaseProductRef", "userId" ],
+				exclude: [ "orderDetailRef", "userId" ],
 			},
 			include: [
 				{

@@ -7,6 +7,7 @@ dotenv.config (
 );
 
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
+const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
 //Service
 const UserService = require(path.resolve(process.cwd(), 'src', 'services', 'user.service.js'));
@@ -36,6 +37,7 @@ describe('User service', () => {
 
 	afterAll( async () => {
 		await migration();
+		conn.close();
 	});
 
 	it('The "add" method registered a new user in the database', async () => {

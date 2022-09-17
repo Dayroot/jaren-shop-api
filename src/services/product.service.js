@@ -1,20 +1,21 @@
 const boom = require('@hapi/boom');
+const conn = require('../db/connectionDB');
 
 //Models
 const Product = require('../db/models/product.model');
 const ProductImage = require('../db/models/productImage.model');
-const Price = require('../db/models/price.model');
+const ProductVariant = require('../db/models/productVariant.model');
 class ProductService {
 
-	static add = async (brandId, name, description, stock, images, gender, prices, categoryId) => {
+	static add = async (brandId, name, description, images, gender, variants, categoryId) => {
+
 		const productInstance = await Product.create({
 			brandId,
 			name,
 			description,
-			stock,
 			images,
 			gender,
-			prices,
+			variants,
 			categoryId,
 		}, {
 			include: [
@@ -23,12 +24,14 @@ class ProductService {
 					as: 'images',
 				},
 				{
-					model: Price,
+					model: ProductVariant,
+					as: 'variants',
 				}
 			],
 		});
 		if(!(productInstance instanceof Product)) throw boom.badImplementation('Unexpected error');
 		return await this.findOne(productInstance.id);
+
 	}
 
 	static bulkAdd = async (productsData) => {
@@ -39,7 +42,8 @@ class ProductService {
 					as: 'images',
 				},
 				{
-					model: Price,
+					model: ProductVariant,
+					as: 'variants',
 				}
 			],
 		});
@@ -48,27 +52,53 @@ class ProductService {
 		return await this.find({id: productIds});
 	}
 
-	static find = async (params = null, stockScope='available') => {
+	static find = async (params = null) => {
 		let searchRequest = {};
 		if(params && Object.keys(params).length !== 0){
 			searchRequest.where = params;
 		}
-		const products = await Product.scope('format', stockScope).findAll(searchRequest);
+		const products = await Product.scope('format').findAll(searchRequest);
 		if(!Array.isArray(products)) throw boom.badImplementation('Unexpected error');
 		return products.map( product => product.toJSON() );
 	}
 
 
 	static findOne = async (id) => {
-		const product = await Product.scope('format', 'available').findByPk(id);
+		const product = await Product.scope('format').findByPk(id);
 		if( product === null ) throw boom.notFound('Product not found');
 		return product.toJSON();
 	}
 
 	static update = async (id, newData) => {
-		const res = await Product.update(newData, {where: {id}});
-		if(res === null) throw boom.badImplementation('Unexpected error');
-		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The id or data is not valid");
+		const {variants} = newData;
+
+		await conn.transaction( async (t) => {
+
+			let variantsPromises = [], productPromise;
+
+			if(variants && Array.isArray(variants)) {
+				delete newData.variants;
+				variantsPromises = variants.map( async (variantData) => {
+					const id = variantData.id;
+					if(!id) throw boom.badRequest('Invalid data');
+					delete variantData.id;
+					await ProductVariant.update( variantData, {
+						where: {id},
+						transaction: t,
+					});
+				});
+			}
+
+			if(Object.keys(newData).length !== 0) {
+				productPromise = Product.update(newData, {
+					where: {id},
+					transaction: t,
+				});
+			}
+
+			await Promise.all([productPromise, ...variantsPromises]);
+		});
+
 		return await this.findOne(id);
 	}
 

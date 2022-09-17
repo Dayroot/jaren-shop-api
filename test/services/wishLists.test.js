@@ -7,6 +7,7 @@ dotenv.config (
 );
 
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
+const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
 //Service
 const UserService = require(path.resolve(process.cwd(), 'src', 'services', 'user.service.js'));
@@ -22,40 +23,47 @@ const userData = {
 	password: '12345',
 };
 
-
 const productsData = [
 	{
 		brandId: 1,
 		name: "Sauvage",
 		description: "The strong gust of Citrus in Sauvage Eau de Toilette is powerfully.",
-		stock: 213,
 		images: [{url:"http://suavage1.png"}, {url:"http://suavage2.png"}, {url:"http://suavage3.png"}],
 		gender: 'men',
-		prices: [{size:"30", value: 650.01}, {size:"60", value: 650.01}, {size:"100", value: 649.99}],
+		variants: [
+			{size:"30", price: 350.01, SKU:"DIO-SAU-30", UPC:"145836584321", stock: 10},
+			{size:"60", price: 450.01, SKU:"DIO-SAU-60", UPC:"145836584322", stock: 18},
+			{size:"100", price: 649.99, SKU:"DIO-SAU-100", UPC:"145836584323", stock: 12}
+		],
 		categoryId: 1,
 	},
 	{
 		brandId: 1,
 		name: "BLEU DE CHANEL",
 		description: "An ode to masculine freedom expressed in an aromatic-woody fragrance with a captivating trail.",
-		stock: 140,
 		images: [{url:"http://blue1.png"}, {url:"http://blue2.png"}, {url:"http://blue3.png"}],
 		gender: 'men',
-		prices: [{size:"60", value: 850.00}, {size:"100", value: 1350.00}, {size:"200", value: 2799.99}],
+		variants: [
+			{size:"30", price: 550.01, SKU:"CHA-BLE-30", UPC:"145836584324", stock: 80},
+			{size:"60", price: 850.01, SKU:"CHA-BLE-60", UPC:"145836584325", stock: 48},
+			{size:"100", price: 1149.99, SKU:"CHA-BLE-100", UPC:"145836584326", stock: 242}
+		],
 		categoryId: 1,
 	},
 	{
 		brandId: 1,
 		name: "Black Opium",
 		description: "The original Eau de Parfum. Featuring black coffee and sensual vanilla. Addictive and energising.",
-		stock: 451,
 		images: [{url:"http://opium1.png"}, {url:"http://opium2.png"}, {url:"http://opium3.png"}],
 		gender: 'woman',
-		prices: [{size:"80", value: 1199.99}, {size:"100", value: 1999.99}, {size:"200", value: 3400.00}],
+		variants: [
+			{size:"30", price: 1250.01, SKU:"YSL-BOP-30", UPC:"145836584327", stock: 260},
+			{size:"60", price: 1950.01, SKU:"YSL-BOP-60", UPC:"145836584328", stock: 187},
+			{size:"100", price: 2349.99, SKU:"YSL-BOP-100", UPC:"145836584329", stock: 122}
+		],
 		categoryId: 1,
 	}
 ];
-
 
 const brandData = {
 	name: "DIOR",
@@ -66,17 +74,17 @@ const wishProducts = [
 	{
 		wishListId: 1,
 		productId: 1,
-		overview: 'perfume for men Sauvage 60ml brand DIOR',
+		SKU:"DIO-SAU-30",
 	},
 	{
 		wishListId: 1,
 		productId: 2,
-		overview: 'perfume for men BLEU DE CHANEL 100ml brand CHANEL',
+		SKU:"CHA-BLE-60",
 	},
 	{
 		wishListId: 1,
 		productId: 3,
-		overview: 'perfume for woman Black Opium 120ml brand YVES SAINT LAURENT',
+		SKU:"YSL-BOP-100",
 	},
 ]
 
@@ -92,22 +100,18 @@ describe('WishList service', () => {
 
 	afterAll( async () => {
 		await migration();
+		conn.close();
 	});
 
 	it('The "addProduct" method add a product to the wishlist in the database and returns all products of the wish list', async () => {
 		const wishList = await WishListService.addProduct(...Object.values(wishProducts[0]));
-		//console.log(wishList, wishList.wishList_products[0].product);
+
 		expect(typeof wishList).toBe('object');
-		expect(Object.keys(wishList).sort()).toEqual(['id', 'userId', 'wishList_products'].sort());
-		expect(Array.isArray(wishList.wishList_products)).toBeTruthy();
-		wishList.wishList_products.forEach( (wishList_product, i) => {
+		expect(Object.keys(wishList).sort()).toEqual(['id', 'userId', 'items'].sort());
+		expect(Array.isArray(wishList.items)).toBeTruthy();
+		wishList.items.forEach( (wishList_product) => {
 			expect(typeof wishList_product).toBe('object');
-			expect(Object.keys(wishList_product).sort()).toEqual(['ref', 'overview', 'product'].sort());
-			expect(typeof wishList_product.product).toBe('object');
-			expect(Object.keys(wishList_product.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock', 'gender', 'prices', 'category'].sort());
-			expect(wishList_product.product.name).toBe(productsData[i].name);
-			expect(wishList_product.product.description).toBe(productsData[i].description);
-			expect(wishList_product.product.stock).toBe(productsData[i].stock);
+			expect(Object.keys(wishList_product).sort()).toEqual(['ref', 'overview', 'image', 'price', 'SKU', 'productId'].sort());
 		});
 	});
 
@@ -123,39 +127,34 @@ describe('WishList service', () => {
 	});
 
 	it('The "findOne" method return the wish list that corresponds to the id', async () => {
-		const wishList = await WishListService.addProduct(...Object.values(wishProducts[0]));
-		const wishListFinded = await WishListService.findOne(wishList.id);
+		const wishListCreated = await WishListService.addProduct(...Object.values(wishProducts[0]));
+		const wishList = await WishListService.findOne(wishListCreated.id);
 
-		expect(typeof wishListFinded).toBe('object');
-		expect(Object.keys(wishListFinded).sort()).toEqual(['id', 'userId', 'wishList_products'].sort());
-		expect(Array.isArray(wishListFinded.wishList_products)).toBeTruthy();
-		wishListFinded.wishList_products.forEach( (wishList_product, i) => {
+		expect(typeof wishList).toBe('object');
+		expect(Object.keys(wishList).sort()).toEqual(['id', 'userId', 'items'].sort());
+		expect(Array.isArray(wishList.items)).toBeTruthy();
+		wishList.items.forEach( (wishList_product) => {
 			expect(typeof wishList_product).toBe('object');
-			expect(Object.keys(wishList_product).sort()).toEqual(['ref', 'overview', 'product'].sort());
-			expect(typeof wishList_product.product).toBe('object');
-			expect(Object.keys(wishList_product.product).sort()).toEqual(['id', 'brand', 'images', 'discountId', 'name', 'description', 'stock', 'gender', 'prices', 'category'].sort());
-			expect(wishList_product.product.name).toBe(productsData[i].name);
-			expect(wishList_product.product.description).toBe(productsData[i].description);
-			expect(wishList_product.product.stock).toBe(productsData[i].stock);
+			expect(Object.keys(wishList_product).sort()).toEqual(['ref', 'overview', 'image', 'price', 'SKU', 'productId'].sort());
 		});
 	});
 
 	it('If the wish list has no products, it must return an empty array in its products attribute', async () => {
 		const wishListFinded = await WishListService.findOne(1);
 		expect(typeof wishListFinded).toBe('object');
-		expect(Object.keys(wishListFinded).sort()).toEqual(['id', 'userId', 'wishList_products'].sort());
-		expect(Array.isArray(wishListFinded.wishList_products)).toBeTruthy();
-		expect(wishListFinded.wishList_products.length).toBe(0);
+		expect(Object.keys(wishListFinded).sort()).toEqual(['id', 'userId', 'items'].sort());
+		expect(Array.isArray(wishListFinded.items)).toBeTruthy();
+		expect(wishListFinded.items.length).toBe(0);
 	});
 
 	it('The "deleteProduct" method delete a product of the wish list in the database, and returns the wish list', async () => {
 		const wishList = await WishListService.addProduct(...Object.values(wishProducts[0]));
-		const result = await WishListService.deleteProduct(wishList.id, wishList.wishList_products[0].ref);
+		const result = await WishListService.deleteProduct(wishList.id, wishList.items[0].ref);
 
 		expect(typeof result).toBe('object');
-		expect(Object.keys(result).sort()).toEqual(['id', 'userId', 'wishList_products'].sort());
-		expect(Array.isArray(result.wishList_products)).toBeTruthy();
-		expect(result.wishList_products.length).toBe(0);
+		expect(Object.keys(result).sort()).toEqual(['id', 'userId', 'items'].sort());
+		expect(Array.isArray(result.items)).toBeTruthy();
+		expect(result.items.length).toBe(0);
 	});
 
 });

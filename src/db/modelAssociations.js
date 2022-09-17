@@ -3,7 +3,7 @@ const conn = require('./connectionDB');
 
 //Models
 const Product = require('./models/product.model');
-const Price = require('./models/price.model');
+const ProductVariant = require('./models/productVariant.model');
 const Brand = require('./models/brand.model');
 const Discount = require('./models/discount.model');
 const ProductImage = require('./models/productImage.model');
@@ -11,10 +11,10 @@ const User = require('./models/user.model');
 const WishList = require('./models/wishList.model');
 const ShoppingCart = require('./models/shoppingCart.model');
 const Review = require('./models/review.model');
-const Purchase = require('./models/purchase.model');
+const Order = require('./models/order.model');
 const Address = require('./models/address.model');
 const ShoppingCart_Product = require('./models/shoppingCart_product.model');
-const Purchase_Product = require('./models/purchase_product.model');
+const OrderDetail = require('./models/orderDetail.model');
 const WishList_Product = require('./models/wishList_product.model');
 const Category = require('./models/category.model');
 const OrderAddress = require('./models/orderAddress.model');
@@ -24,10 +24,11 @@ const associations = async () => {
 
 		if(Object.values(Product.associations).length === 0) {
 
-			Product.hasMany(Price, {
+			Product.hasMany(ProductVariant, {
 				onDelete: 'CASCADE',
+				as: 'variants'
 			});
-			Price.belongsTo(Product);
+			ProductVariant.belongsTo(Product);
 
 			Category.hasMany(Product);
 			Product.belongsTo(Category);
@@ -61,11 +62,14 @@ const associations = async () => {
 			});
 			Review.belongsTo(Product);
 
-			Purchase_Product.hasOne(Review, {foreignKey: {
-				name: 'ref',
-				unique: true,
-			}});
-			Review.belongsTo(Purchase_Product);
+			OrderDetail.hasOne(Review, {
+				foreignKey: {
+					name: 'ref',
+					unique: true,
+					allowNull: false,
+				}
+			});
+			Review.belongsTo(OrderDetail);
 
 			User.hasOne(ShoppingCart, {
 				onDelete: 'CASCADE',
@@ -77,27 +81,30 @@ const associations = async () => {
 			});
 			WishList.belongsTo(User);
 
-			User.hasMany(Purchase, {
+			User.hasMany(Order, {
 				onDelete: 'CASCADE',
 			});
-			Purchase.belongsTo(User);
+			Order.belongsTo(User);
 
-			Purchase.hasOne(OrderAddress, {as: 'address'});
-			OrderAddress.belongsTo(Purchase);
+			Order.hasOne(OrderAddress, {as: 'address'});
+			OrderAddress.belongsTo(Order);
 
-			ShoppingCart.hasMany(ShoppingCart_Product);
+			ShoppingCart.hasMany(ShoppingCart_Product, {as: 'items'});
 			ShoppingCart_Product.belongsTo(ShoppingCart);
 
 			Product.hasMany(ShoppingCart_Product);
 			ShoppingCart_Product.belongsTo(Product);
 
-			Purchase.hasMany(Purchase_Product);
-			Purchase_Product.belongsTo(Purchase);
+			Order.hasMany(OrderDetail, {
+				onDelete: 'CASCADE',
+				as: 'details',
+			});
+			OrderDetail.belongsTo(Order);
 
-			Product.hasMany(Purchase_Product);
-			Purchase_Product.belongsTo(Product);
+			Product.hasMany(OrderDetail);
+			OrderDetail.belongsTo(Product);
 
-			WishList.hasMany(WishList_Product);
+			WishList.hasMany(WishList_Product, {as: 'items'});
 			WishList_Product.belongsTo(WishList);
 
 			Product.hasMany(WishList_Product);

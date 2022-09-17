@@ -7,6 +7,7 @@ dotenv.config (
 );
 
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
+const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
 //Service
 const UserService = require(path.resolve(process.cwd(), 'src', 'services', 'user.service.js'));
@@ -14,7 +15,7 @@ const BrandService = require(path.resolve(process.cwd(), 'src', 'services', 'bra
 const ProductService = require(path.resolve(process.cwd(), 'src', 'services', 'product.service.js'));
 const ReviewService = require(path.resolve(process.cwd(), 'src', 'services', 'review.service.js'));
 const CategoryService = require(path.resolve(process.cwd(), 'src', 'services', 'category.service.js'));
-const PurchaseService = require(path.resolve(process.cwd(), 'src', 'services', 'purchase.service.js'));
+const OderService = require(path.resolve(process.cwd(), 'src', 'services', 'order.service.js'));
 
 const usersData = [
 	{
@@ -35,48 +36,84 @@ const productData = {
 	brandId: 1,
 	name: "Sauvage",
 	description: "The strong gust of Citrus in Sauvage Eau de Toilette is powerfully.",
-	stock: 213,
 	images: [{url:"http://suavage1.png"}, {url:"http://suavage2.png"}, {url:"http://suavage3.png"}],
 	gender: 'men',
-	prices: [{size:"30", value: 650.01}, {size:"60", value: 650.01}, {size:"100", value: 649.99}],
+	variants: [
+		{size:"30", price: 350.01, SKU:"DIO-SAU-30", UPC:"145836584321", stock: 10},
+		{size:"60", price: 450.01, SKU:"DIO-SAU-60", UPC:"145836584322", stock: 18},
+		{size:"100", price: 649.99, SKU:"DIO-SAU-100", UPC:"145836584323", stock: 12}
+	],
 	categoryId: 1,
 }
 
-const purchasesData = [
+const ordersData = [
 	{
 		userId: 1,
+		address: {
+			state: 'Norte de santander',
+			city: 'Cucuta',
+			streetAddress: 'avenida 1a #85d barrio Caobos',
+			postalCode: '530001',
+			propertyType: 'house',
+			phoneNumber: '3164578632',
+			fullname: 'Helena Blade',
+		},
 		status: 'pending',
-		purchase_products: [
+		details: [
 			{
 				productId: 1,
+				SKU: "DIO-SAU-30",
+				price: 350.01,
 				quantity: 1,
-				overview: 'perfume for men Sauvage 60ml brand DIOR',
-			}
-		],
-	},
-	{
-		userId: 2,
-		status: 'pending',
-		purchase_products: [
+				overview: 'perfume for men Sauvage 30ml brand DIOR',
+			},
 			{
 				productId: 1,
-				quantity: 5,
-				overview: 'perfume for men Sauvage 60ml brand DIOR',
-			}
+				SKU: "DIO-SAU-60",
+				price: 350.01,
+				quantity: 1,
+				overview: 'perfume for men Sauvage 30ml brand DIOR',
+			},
+			{
+				productId: 1,
+				SKU: "DIO-SAU-100",
+				price: 350.01,
+				quantity: 1,
+				overview: 'perfume for men Sauvage 30ml brand DIOR',
+			},
 		],
 	},
 	{
 		userId: 1,
+		address: {
+			state: 'Norte de santander',
+			city: 'Cucuta',
+			streetAddress: 'avenida 1a #85d barrio Caobos',
+			postalCode: '530001',
+			propertyType: 'house',
+			phoneNumber: '3164578632',
+			fullname: 'Helena Blade',
+		},
 		status: 'pending',
-		purchase_products: [
+		details: [
 			{
 				productId: 1,
-				quantity: 5,
-				overview: 'perfume for men Sauvage 60ml brand DIOR',
-			}
+				SKU: "DIO-SAU-30",
+				price: 350.01,
+				quantity: 1,
+				overview: 'perfume for men Sauvage 30ml brand DIOR',
+			},
+			{
+				productId: 1,
+				SKU: "DIO-SAU-60",
+				price: 350.01,
+				quantity: 1,
+				overview: 'perfume for men Sauvage 30ml brand DIOR',
+			},
 		],
 	},
 ];
+
 
 const brandData = {
 	name: "DIOR",
@@ -116,11 +153,12 @@ describe('Review service', () => {
 		await BrandService.add(...Object.values(brandData));
 		await CategoryService.add("perfumes");
 		await ProductService.add(...Object.values(productData));
-		await PurchaseService.bulkAdd(purchasesData);
+		await OderService.bulkAdd(ordersData);
 	});
 
 	afterAll( async () => {
 		await migration();
+		conn.close();
 	});
 
 	it('The "add" method registered a new review in the database', async () => {

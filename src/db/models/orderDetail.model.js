@@ -4,7 +4,7 @@ const conn = require('../connectionDB');
 //Custom validations
 const {isString} = require('../../utils/customValidations');
 
-const Purchase_Product = conn.define('purchase_product', {
+const Purchase_Product = conn.define('orderDetail', {
 	ref: {
 		type: DataTypes.INTEGER,
 		primaryKey: true,
@@ -22,6 +22,20 @@ const Purchase_Product = conn.define('purchase_product', {
 		allowNull: false,
 		validate: {
 			isString,
+		},
+	},
+	price: {
+		type: DataTypes.FLOAT,
+		allowNull: false,
+		validate: {
+			isNumeric: true,
+		},
+	},
+	SKU: {
+		type: DataTypes.STRING(12),
+		allowNull: false,
+		validate: {
+			isString
 		}
 	},
 }, {

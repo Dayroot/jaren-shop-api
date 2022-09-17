@@ -7,6 +7,7 @@ dotenv.config (
 );
 
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
+const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
 //Models
 const DiscountModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'discount.model.js'));
@@ -45,6 +46,7 @@ describe('Discount service', () => {
 
 	afterAll( async () => {
 		await migration();
+		conn.close();
 	});
 
 	it('The add method should add a new record in the Discounts table of the database', async () => {

@@ -7,6 +7,7 @@ dotenv.config (
 );
 
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
+const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
 //Models
 const ProductImageModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'productImage.model.js'));
@@ -29,6 +30,7 @@ describe('ProductImage service', () => {
 
 	afterAll( async () => {
 		await migration();
+		conn.close();
 	});
 
 	it('The add method should add a new record in the ProductImages table of the database', async () => {

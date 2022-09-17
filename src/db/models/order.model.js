@@ -3,14 +3,11 @@ const conn = require('../connectionDB');
 
 //Models
 const Product = require('./product.model');
-const Brand = require('./brand.model');
 const ProductImage = require('./productImage.model');
-const Purchase_Product = require('./purchase_product.model');
-const Category = require('./category.model');
-const Price = require('./price.model');
+const OrderDetail = require('./orderDetail.model');
 const OrderAddress = require('./OrderAddress.model');
 
-const Purchase = conn.define( 'purchase', {
+const Order = conn.define( 'order', {
 	status: {
 		type: DataTypes.ENUM('pending', 'dispatched', 'delivered'),
 		defaultValue: 'pending',
@@ -18,7 +15,7 @@ const Purchase = conn.define( 'purchase', {
 }, {
 	timestamps: true,
 	updatedAt: 'statusChangeDate',
-	createdAt: 'purchaseDate',
+	createdAt: 'orderDate',
 	scopes: {
 		products: {
 			include: [
@@ -26,45 +23,48 @@ const Purchase = conn.define( 'purchase', {
 					model: OrderAddress,
 					as: 'address',
 					attributes: {
-						exclude: ['purchaseId', 'id'],
+						exclude: ['orderId', 'id'],
 					}
 				},
 				{
-					model: Purchase_Product,
+					model: OrderDetail,
+					as: 'details',
 					attributes: {
-						exclude: ['purchaseId', 'productId']
+						exclude: ['orderId']
 					},
 					include: {
 						model: Product,
 						include: [
-							{
-								model: Brand,
-							},
 							{
 								model: ProductImage,
 								as: 'images',
 								attributes: {
 									exclude: ['productId']
 								},
+								//order: [[{model: ProductImage, as: 'images'}, 'id', 'DESC']],
 							},
-							{
-								model: Price,
-								attributes: {
-									exclude: ['productId']
-								}
-							},
-							{
-								model: Category,
-							}
 						],
-						attributes: {
-							exclude: ['brandId', 'categoryId']
-						},
-					}
+					},
 				}
-			]
+			],
+			order: [
+				[{model: OrderDetail, as: 'details'}, 'ref', 'ASC'],
+			],
+		}
+	},
+	hooks: {
+		afterFind: async (instances) => {
+			if(!Array.isArray(instances)){
+				instances = [instances];
+			}
+			instances.forEach( instance => {
+				instance.dataValues.details.forEach( detail => {
+					detail.dataValues.image = detail.dataValues.product.dataValues.images[0].dataValues.url;
+					delete detail.dataValues.product;
+				})
+			});
 		}
 	}
 });
 
-module.exports = Purchase;
+module.exports = Order;

@@ -21,6 +21,7 @@ describe('Order Address model', () => {
 
 	afterAll( async () => {
 		await db.sync({force: true});
+		db.close();
 	});
 	describe('Validations', () => {
 

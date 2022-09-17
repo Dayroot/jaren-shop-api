@@ -12,15 +12,18 @@ app.use(express.json());
 const mode = process.env.MODE;
 
 if(mode === 'DEVELOPMENT' || mode === 'TEST') {
-	app.use(logErrors);
 	app.use(morgan('tiny'));
 }
 
-app.use(boomErrorHandler);
-app.use(errorHandler);
-
 //REST API Routes
 routes(app);
+
+//Error handlers
+if(mode === 'DEVELOPMENT' || mode === 'TEST') {
+	app.use(logErrors)
+};
+app.use(boomErrorHandler);
+app.use(errorHandler);
 
 //Server config
 const {PROTOCOL, HOST, PORT} = process.env;
@@ -28,3 +31,4 @@ app.listen(PORT, (err) => {
     if (err) console.error(err);
     console.log(`Listening on ${PROTOCOL}://${HOST}:${PORT}`);
 });
+

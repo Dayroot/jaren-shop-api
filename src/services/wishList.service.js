@@ -12,11 +12,11 @@ class wishListService {
 		return wishList.toJSON();
 	}
 
-	static addProduct = async (wishListId, productId, overview) => {
-		const isNewProduct = await WishList_Product.findOne({where: {wishListId, productId, overview}});
+	static addProduct = async (wishListId, productId, SKU) => {
+		const isNewProduct = await WishList_Product.findOne({where: {wishListId, productId, SKU}});
 
 		if(isNewProduct !== null) throw boom.conflict('the product had already been added');
-		const wishListProduct = await WishList_Product.create({wishListId, productId, overview});
+		const wishListProduct = await WishList_Product.create({wishListId, productId, SKU});
 		if(!(wishListProduct instanceof WishList_Product)) throw boom.badImplementation('Unexpected error');
 		return await this.findOne(wishListId);
 	}

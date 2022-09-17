@@ -17,8 +17,8 @@ const ShoppingCart_Product = conn.define('shoppingCart_product', {
 			isInt: true,
 		},
 	},
-	overview: {
-		type: DataTypes.TEXT,
+	SKU: {
+		type: DataTypes.STRING(12),
 		allowNull: false,
 		validate: {
 			isString,

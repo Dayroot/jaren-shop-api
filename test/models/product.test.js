@@ -21,6 +21,7 @@ describe('Product model', () => {
 
 	afterAll( async () => {
 		await db.sync({force: true});
+		db.close();
 	});
 
 	describe('Validations', () => {
@@ -38,12 +39,6 @@ describe('Product model', () => {
 
 		it("If the gender property value is diferent a string type, the record is not created", (done) => {
 			ProductModel.create({name: "Any name", description:"Any text", gender: 6})
-				.then(() => done("The record should not have been created"))
-				.catch(() => done());
-		});
-
-		it("If the stock property value is diferent a integer type, the record is not created", (done) => {
-			ProductModel.create({name: "Any name", description:"Any text", stock: "test", gender:"men"})
 				.then(() => done("The record should not have been created"))
 				.catch(() => done());
 		});

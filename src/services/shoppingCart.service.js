@@ -12,12 +12,12 @@ class ShoppingCartService {
 		return shoppingCart.toJSON();
 	}
 
-	static addProduct = async (shoppingCartId, productId, quantity, overview) => {
+	static addProduct = async (shoppingCartId, productId, SKU, quantity) => {
 
-		const currentProduct = await ShoppingCart_Product.findOne({where: {shoppingCartId, productId, overview}});
+		const currentProduct = await ShoppingCart_Product.findOne({where: {shoppingCartId, productId, SKU}});
 
 		if(currentProduct === null) {
-			const shoppingProduct = await ShoppingCart_Product.create({shoppingCartId, productId, quantity, overview});
+			const shoppingProduct = await ShoppingCart_Product.create({shoppingCartId, productId, quantity, SKU});
 			if(!(shoppingProduct instanceof ShoppingCart_Product)) throw boom.badImplementation('Unexpected error');
 		} else {
 			const res = await ShoppingCart_Product.update({

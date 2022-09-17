@@ -7,6 +7,7 @@ dotenv.config (
 );
 
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
+const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
 //Services
 const CategoryService = require(path.resolve(process.cwd(), 'src', 'services', 'category.service.js'));
@@ -30,6 +31,7 @@ describe('Category service', () => {
 
 	afterAll( async () => {
 		await migration();
+		conn.close();
 	});
 
 	it('The add method should add a new record in the Categories table of the database', async () => {

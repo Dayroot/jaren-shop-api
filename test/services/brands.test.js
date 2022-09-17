@@ -7,9 +7,8 @@ dotenv.config (
 );
 
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
+const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
-//Models
-const BrandModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'brand.model.js'));
 
 //Services
 const BrandService = require(path.resolve(process.cwd(), 'src', 'services', 'brand.service.js'));
@@ -38,6 +37,7 @@ describe('Brand service', () => {
 
 	afterAll( async () => {
 		await migration();
+		conn.close();
 	});
 
 	it('The add method should add a new record in the Brands table of the database', async () => {

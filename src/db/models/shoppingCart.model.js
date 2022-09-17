@@ -1,12 +1,15 @@
 const conn = require('../connectionDB');
 
+//Utils
+const overviewCreator = require('../../utils/overviewCreator');
+
 //Models
 const Product = require('./product.model');
 const ShoppingCart_Product = require('./shoppingCart_product.model');
 const Brand = require('./brand.model');
 const ProductImage = require('./productImage.model');
 const Category = require('./category.model');
-const Price = require('./price.model');
+const ProductVariant = require('./productVariant.model');
 
 const ShoppingCart = conn.define('shoppingCart', {}, {
 	timestamps: false,
@@ -14,8 +17,9 @@ const ShoppingCart = conn.define('shoppingCart', {}, {
 		products: {
 			include: {
 				model: ShoppingCart_Product,
+				as: 'items',
 				attributes: {
-					exclude: ['shoppingCartId', 'productId'],
+					exclude: ['shoppingCartId'],
 				},
 				include: {
 					model: Product,
@@ -31,7 +35,8 @@ const ShoppingCart = conn.define('shoppingCart', {}, {
 							},
 						},
 						{
-							model: Price,
+							model: ProductVariant,
+							as: 'variants',
 							attributes: {
 								exclude: ['productId']
 							}
@@ -45,6 +50,29 @@ const ShoppingCart = conn.define('shoppingCart', {}, {
 					},
 				}
 			},
+		}
+	},
+	hooks: {
+		afterFind: async (instances) => {
+			if(!Array.isArray(instances)) {
+				instances = [instances];
+			}
+
+			instances.forEach( cart => {
+				cart.dataValues.items.forEach( itemData => {
+					const item = itemData.dataValues;
+					const product = item.product.dataValues;
+					const category = product.category.dataValues.name;
+					const brand = product.brand.dataValues.name;
+					const {size, price} = product.variants.find(variant => variant.SKU === item.SKU) || {};
+					const overview = overviewCreator({category, brand, productName: product.name, size, gender: product.gender });
+					item.overview = overview;
+					item.price = price;
+					item.image = product.images[0].dataValues.url;
+					delete item.product;
+				});
+			});
+
 		}
 	}
 }, {

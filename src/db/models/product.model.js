@@ -4,7 +4,7 @@ const conn = require('../connectionDB');
 //Models
 const Brand = require('./brand.model');
 const ProductImage = require('./productImage.model');
-const Price = require('./price.model');
+const ProductVariant = require('./productVariant.model');
 const Category = require('./category.model');
 
 //Custom Validations
@@ -31,30 +31,16 @@ Product.init({
 		}
 	},
 
-	stock: {
-		type: DataTypes.INTEGER,
-		defaultValue: 0,
-		validate: {
-			isInt: true,
-		}
-	},
-
 	gender: {
 		type: DataTypes.ENUM('men', 'woman', 'unisex', 'none'),
 		allowNull: false,
 	},
+
 }, {
 	sequelize: conn,
 	modelName: 'product',
 	timestamps: false,
 	scopes: {
-		available: {
-			where: {
-				stock: {
-					[Op.gt]: 0,
-				}
-			}
-		},
 		format: {
 			include: [
 				{
@@ -68,10 +54,11 @@ Product.init({
 					},
 				},
 				{
-					model: Price,
+					model: ProductVariant,
+					as: 'variants',
 					attributes: {
 						exclude: ['productId']
-					}
+					},
 				},
 				{
 					model: Category,
@@ -80,6 +67,7 @@ Product.init({
 			attributes: {
 				exclude: ['brandId', 'categoryId']
 			},
+			order: [['id', 'ASC'], [{model: ProductVariant, as: 'variants'}, 'id', 'ASC']],
 		}
 	},
 	hooks: {

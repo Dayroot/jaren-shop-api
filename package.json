@@ -8,17 +8,6 @@
 		"test:models": "jest --verbose --detectOpenHandles models/",
 		"test:routes": "jest --verbose --detectOpenHandles routes/",
 		"test:services": "jest --verbose --detectOpenHandles services/",
-		"test:service:products": "jest --verbose --detectOpenHandles services/products",
-		"test:service:brands": "jest --verbose --detectOpenHandles services/brands",
-		"test:service:discounts": "jest --verbose --detectOpenHandles services/discounts",
-		"test:service:images": "jest --verbose --detectOpenHandles services/productImages",
-		"test:service:users": "jest --verbose --detectOpenHandles services/users",
-		"test:service:addresses": "jest --verbose --detectOpenHandles services/addresses",
-		"test:service:reviews": "jest --verbose --detectOpenHandles services/reviews",
-		"test:service:shoppingCarts": "jest --verbose --detectOpenHandles services/shoppingCarts",
-		"test:service:wishLists": "jest --verbose --detectOpenHandles services/wishLists",
-		"test:service:purchases": "jest --verbose --detectOpenHandles services/purchases",
-		"test:service:categories": "jest --verbose --detectOpenHandles services/categories",
 		"dev": "nodemon -r dotenv/config src/index.js dotenv_config_path=environments/.env.development",
 		"start": "node -r dotenv/config src/index.js dotenv_config_path=environments/.env.production",
 		"lint": "eslint",
@@ -45,6 +34,7 @@
 		"pg": "^8.8.0",
 		"pg-hstore": "^2.3.4",
 		"sequelize": "^6.21.4",
-		"supertest": "^6.2.4"
+		"supertest": "^6.2.4",
+		"supertest-session": "^4.1.0"
 	}
 }

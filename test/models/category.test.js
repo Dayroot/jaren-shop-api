@@ -21,6 +21,7 @@ describe( 'Category model', () => {
 
 	afterAll( async () => {
 		await db.sync({force: true});
+		db.close();
 	});
 	describe( 'Validations', () => {
 		it("If the name property is null, the record will not be created", (done) => {

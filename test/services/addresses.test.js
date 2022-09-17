@@ -7,6 +7,7 @@ dotenv.config (
 );
 
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
+const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
 //Service
 const AddressService = require(path.resolve(process.cwd(), 'src', 'services', 'address.service.js'));
@@ -54,6 +55,7 @@ describe('Address service', () => {
 
 	afterAll( async () => {
 		await migration();
+		conn.close();
 	});
 
 	it('The "add" method registered a new address in the database', async () => {

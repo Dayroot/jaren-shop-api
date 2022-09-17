@@ -11,13 +11,13 @@ const WishList_Product = conn.define('wishList_product', {
 		autoIncrement: true,
 		allowNull: false,
 	},
-	overview: {
-		type: DataTypes.TEXT,
+	SKU: {
+		type: DataTypes.STRING(12),
 		allowNull: false,
 		validate: {
-			isString,
+			isString
 		}
-	}
+	},
 }, {
 	timestamps: false,
 });
