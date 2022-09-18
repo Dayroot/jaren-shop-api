@@ -74,29 +74,34 @@ class ProductService {
 
 		await conn.transaction( async (t) => {
 
-			let variantsPromises = [], productPromise;
+			let promises = [];
 
 			if(variants && Array.isArray(variants)) {
 				delete newData.variants;
-				variantsPromises = variants.map( async (variantData) => {
+				const variantsPromises = variants.map( async (variantData) => {
 					const id = variantData.id;
 					if(!id) throw boom.badRequest('Invalid data');
 					delete variantData.id;
-					await ProductVariant.update( variantData, {
+					return await ProductVariant.update( variantData, {
 						where: {id},
 						transaction: t,
 					});
 				});
+				variantsPromises.length > 0 && promises.push(...variantsPromises);
 			}
-
-			if(Object.keys(newData).length !== 0) {
-				productPromise = Product.update(newData, {
+			if(Object.keys(newData).length > 0) {
+				const productPromise = Product.update(newData, {
 					where: {id},
 					transaction: t,
 				});
+				productPromise && promises.push(productPromise);
 			}
+			const responseArray = await Promise.all(promises);
+			const isSuccess = responseArray.every( res => {
+				return Array.isArray(res) && res[0] === 1;
+			});
+			if(!isSuccess) throw boom.notFound('Product not found');
 
-			await Promise.all([productPromise, ...variantsPromises]);
 		});
 
 		return await this.findOne(id);
@@ -105,7 +110,7 @@ class ProductService {
 	static delete = async (id) => {
 		const res = await Product.destroy({where: {id}});
 		if(res === null) throw boom.badImplementation('Unexpected error');
-		if(res === 0) throw boom.badRequest("The id is not valid");
+		if(res === 0) throw boom.notFound("Product not found");
 		return res;
 	}
 
