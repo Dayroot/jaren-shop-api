@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+//Utils
+const asyncCatch = require('../utils/catchAsync');
+
 //Response
 const {successResponse} = require('../utils/responses');
 
@@ -12,51 +15,42 @@ const {createProductSchema, updateProductSchema, getProductSchema} = require('..
 
 //Data Validator
 const validatorHandler = require('../middlewares/validator.handler');
+const catchAsync = require('../utils/catchAsync');
 
-router.post('/', validatorHandler(createProductSchema, 'body'), async (req, res, next) => {
-	try {
-		const {brandId, name, description, images, gender, variants, categoryId} = req.body;
-		const result = await Service.add(brandId, name, description, images, gender, variants, categoryId);
-		successResponse(res, 201, result);
-	} catch (error) {
-		next(error)
-	}
-});
+router.post('/', validatorHandler(createProductSchema, 'body'), asyncCatch( async (req, res, next) => {
 
-router.get('/:id', validatorHandler(getProductSchema, 'params'), async (req, res, next) => {
-	try {
-		const result = await Service.findOne(req.params.id);
-		successResponse(res, 200, result);
-	} catch (error) {
-		next(error);
-	}
-});
+	const {brandId, name, description, images, gender, variants, categoryId} = req.body;
+	const result = await Service.add(brandId, name, description, images, gender, variants, categoryId);
+	successResponse(res, 201, result);
 
-router.get('/', async (req, res, next) => {
-	try {
-		const result = await Service.find();
-		successResponse(res, 200, result);
-	} catch (error) {
-		next(error);
-	}
-});
+}));
 
-router.patch('/:id', validatorHandler(updateProductSchema, 'params', 'body'), async (req, res, next) => {
-	try {
-		const result = await Service.update(req.params.id, req.body);
-		successResponse(res, 200, result);
-	} catch (error) {
-		next(error)
-	}
-});
+router.get('/:id', validatorHandler(getProductSchema, 'params'), catchAsync( async (req, res, next) => {
 
-router.delete('/:id', validatorHandler(getProductSchema, 'params'), async (req, res, next) => {
-	try {
-		const result = await Service.delete(req.params.id);
-		successResponse(res, 200, result);
-	} catch (error) {
-		next(error)
-	}
-});
+	const result = await Service.findOne(req.params.id);
+	successResponse(res, 200, result);
+
+}));
+
+router.get('/', catchAsync( async (req, res, next) => {
+
+	const result = await Service.find();
+	successResponse(res, 200, result);
+
+}));
+
+router.patch('/:id', validatorHandler(updateProductSchema, 'params', 'body'), catchAsync( async (req, res, next) => {
+
+	const result = await Service.update(req.params.id, req.body);
+	successResponse(res, 200, result);
+
+}));
+
+router.delete('/:id', validatorHandler(getProductSchema, 'params'), catchAsync( async (req, res, next) => {
+
+	const result = await Service.delete(req.params.id);
+	successResponse(res, 200, result);
+
+}));
 
 module.exports = router;
