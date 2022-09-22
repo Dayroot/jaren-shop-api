@@ -1,7 +1,7 @@
 const Joi = require('joi');
 
 const id = Joi.number().integer();
-const url = Joi.string();
+const url = Joi.string().uri();
 
 const createImageSchema = Joi.object({
 	url: url.required(),
