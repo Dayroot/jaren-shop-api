@@ -7,11 +7,13 @@ const categoriesRouter = require('./categories.router');
 const brandsRouter = require('./brands.router');
 const discountsRouter = require('./discounts.router');
 const usersRouter = require('./users.router');
+const addressesRouter = require('./addresses.router');
 
 router.use('/products', productsRouter);
 router.use('/categories', categoriesRouter);
 router.use('/brands', brandsRouter);
 router.use('/discounts', discountsRouter);
 router.use('/users', usersRouter);
+router.use('/addresses', addressesRouter);
 
 module.exports = router;
