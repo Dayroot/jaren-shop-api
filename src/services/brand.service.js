@@ -49,14 +49,14 @@ class BrandService {
 			where: {id}
 		});
 		if(res === null) throw boom.badImplementation('Unexpected error');
-		if(Array.isArray(res) && res[0] === 0) throw boom.badRequest("The id or data is not valid");
+		if(Array.isArray(res) && res[0] === 0) throw boom.notFound('Brand not found');
 		return await this.findOne(id);
 	}
 
 	static delete = async (id) => {
 		const res = await Brand.destroy({where: {id}});
 		if(res === null) throw boom.badImplementation('Unexpected error');
-		if(res === 0) throw boom.badRequest("The id is not valid");
+		if(res === 0) throw boom.notFound('Brand not found');
 		return res;
 	}
 
