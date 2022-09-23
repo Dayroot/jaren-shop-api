@@ -2,9 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 //Utils
-const asyncCatch = require('../utils/catchAsync');
-
-//Response
+const catchAsync = require('../utils/catchAsync');
 const {successResponse} = require('../utils/responses');
 
 //Service
@@ -15,9 +13,8 @@ const {createProductSchema, updateProductSchema, getProductSchema} = require('..
 
 //Data Validator
 const validatorHandler = require('../middlewares/validator.handler');
-const catchAsync = require('../utils/catchAsync');
 
-router.post('/', validatorHandler(createProductSchema, 'body'), asyncCatch( async (req, res, next) => {
+router.post('/', validatorHandler(createProductSchema, 'body'), catchAsync( async (req, res, next) => {
 
 	const {brandId, name, description, images, gender, variants, categoryId} = req.body;
 	const result = await Service.add(brandId, name, description, images, gender, variants, categoryId);
