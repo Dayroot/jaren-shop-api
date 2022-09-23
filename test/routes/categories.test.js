@@ -149,7 +149,7 @@ describe('Categories Endpoints', () => {
 				})
 				.expect(200)
 		);
-		it('Update the category that correspond the id indicated and responds with the product data', () =>
+		it('Update the category that correspond the id indicated and responds with the category data', () =>
 			agent
 				.patch("/api/v1/categories/1")
 				.send({
@@ -165,7 +165,7 @@ describe('Categories Endpoints', () => {
 				})
 		);
 
-		it('If the id does not correspond to any product, responds with Error 404', () =>
+		it('If the id does not correspond to any category, responds with Error 404', () =>
 			agent
 				.patch("/api/v1/categories/62")
 				.send({
