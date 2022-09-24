@@ -4,7 +4,7 @@ const conn = require('../connectionDB');
 //Custom validations
 const {isString} = require('../../utils/customValidations');
 
-const Purchase_Product = conn.define('orderDetail', {
+const OrderDetail = conn.define('orderDetail', {
 	ref: {
 		type: DataTypes.INTEGER,
 		primaryKey: true,
@@ -42,4 +42,4 @@ const Purchase_Product = conn.define('orderDetail', {
 	timestamps: false,
 });
 
-module.exports = Purchase_Product;
+module.exports = OrderDetail;
