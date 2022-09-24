@@ -13,14 +13,7 @@ const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js')
 const CategoryService = require(path.resolve(process.cwd(), 'src', 'services', 'category.service.js'));
 
 // Testing data
-const categoriesData = [
-	{
-		name: "perfumes"
-	},
-	{
-		name: "watches"
-	},
-];
+const { categoriesData } = require('../testData');
 
 
 describe('Category service', () => {

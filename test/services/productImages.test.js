@@ -9,18 +9,11 @@ dotenv.config (
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
 const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
-//Models
-const ProductImageModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'productImage.model.js'));
-
 //Services
 const ProductImageService = require(path.resolve(process.cwd(), 'src', 'services', 'productImage.service.js'));
 
-const productImagesData = [
-	{url: "http://productimage1.png"},
-	{url: "http://productimage2.png"},
-	{url: "http://productimage3.png"},
-];
-
+// Testing data
+const { productImagesData } = require('../testData');
 
 describe('ProductImage service', () => {
 

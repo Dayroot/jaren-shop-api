@@ -16,135 +16,15 @@ const ProductService = require(path.resolve(process.cwd(), 'src', 'services', 'p
 const OrderService = require(path.resolve(process.cwd(), 'src', 'services', 'order.service.js'));
 const CategoryService = require(path.resolve(process.cwd(), 'src', 'services', 'category.service.js'));
 
-const userData = {
-	firstName: 'Juanito',
-	lastName: 'Perez',
-	email: 'juenito@gmail.com',
-	password: '12345',
-};
-
-const productsData =  [
-	{
-		brandId: 1,
-		name: "Sauvage",
-		description: "The strong gust of Citrus in Sauvage Eau de Toilette is powerfully.",
-		images: [{url:"http://suavage1.png"}, {url:"http://suavage2.png"}, {url:"http://suavage3.png"}],
-		gender: 'men',
-		variants: [
-			{size:"30", price: 350.01, SKU:"DIO-SAU-30", UPC:"145836584321", stock: 10},
-			{size:"60", price: 450.01, SKU:"DIO-SAU-60", UPC:"145836584322", stock: 18},
-			{size:"100", price: 649.99, SKU:"DIO-SAU-100", UPC:"145836584323", stock: 12}
-		],
-		categoryId: 1,
-	},
-	{
-		brandId: 1,
-		name: "BLEU DE CHANEL",
-		description: "An ode to masculine freedom expressed in an aromatic-woody fragrance with a captivating trail.",
-		images: [{url:"http://blue1.png"}, {url:"http://blue2.png"}, {url:"http://blue3.png"}],
-		gender: 'men',
-		variants: [
-			{size:"30", price: 550.01, SKU:"CHA-BLE-30", UPC:"145836584324", stock: 80},
-			{size:"60", price: 850.01, SKU:"CHA-BLE-60", UPC:"145836584325", stock: 48},
-			{size:"100", price: 1149.99, SKU:"CHA-BLE-100", UPC:"145836584326", stock: 242}
-		],
-		categoryId: 1,
-	},
-	{
-		brandId: 1,
-		name: "Black Opium",
-		description: "The original Eau de Parfum. Featuring black coffee and sensual vanilla. Addictive and energising.",
-		images: [{url:"http://opium1.png"}, {url:"http://opium2.png"}, {url:"http://opium3.png"}],
-		gender: 'woman',
-		variants: [
-			{size:"30", price: 1250.01, SKU:"YSL-BOP-30", UPC:"145836584327", stock: 260},
-			{size:"60", price: 1950.01, SKU:"YSL-BOP-60", UPC:"145836584328", stock: 187},
-			{size:"100", price: 2349.99, SKU:"YSL-BOP-100", UPC:"145836584329", stock: 122}
-		],
-		categoryId: 1,
-	}
-];
-
-
-const brandData = {
-	name: "DIOR",
-	logoUrl: "http://diorlogo.png",
-}
-
-const ordersData = [
-	{
-		userId: 1,
-		address: {
-			state: 'Norte de santander',
-			city: 'Cucuta',
-			streetAddress: 'avenida 1a #85d barrio Caobos',
-			postalCode: '530001',
-			propertyType: 'house',
-			phoneNumber: '3164578632',
-			fullname: 'Helena Blade',
-		},
-		status: 'pending',
-		details: [
-			{
-				productId: 1,
-				SKU: "DIO-SAU-30",
-				price: 350.01,
-				quantity: 1,
-				overview: 'perfume for men Sauvage 30ml brand DIOR',
-			},
-			{
-				productId: 2,
-				SKU: "CHA-BLE-100",
-				price: 1149.99,
-				quantity: 4,
-				overview: 'perfume for men BLEU DE CHANEL 100ml brand CHANEL',
-			},
-			{
-				productId: 3,
-				SKU:"YSL-BOP-60",
-				price: 1950.01,
-				quantity: 2,
-				overview: 'perfume for woman Black Opium 60ml brand YVES SAINT LAURENT',
-			}
-		],
-	},
-	{
-		userId: 1,
-		address: {
-			state: 'Norte de santander',
-			city: 'Cucuta',
-			streetAddress: 'avenida 1a #85d barrio Caobos',
-			postalCode: '530001',
-			propertyType: 'house',
-			phoneNumber: '3164578632',
-			fullname: 'Helena Blade',
-		},
-		status: 'pending',
-		details: [
-			{
-				productId: 1,
-				SKU: "DIO-SAU-30",
-				price: 350.01,
-				quantity: 1,
-				overview: 'perfume for men Sauvage 30ml brand DIOR',
-			},
-			{
-				productId: 2,
-				SKU: "CHA-BLE-100",
-				price: 1149.99,
-				quantity: 4,
-				overview: 'perfume for men BLEU DE CHANEL 100ml brand CHANEL',
-			},
-		],
-	},
-];
+//Testing data
+const { ordersData, productsData, brandsData, usersData } = require('../testData');
 
 describe('Order service', () => {
 
 	beforeEach( async () => {
 		await migration();
-		await UserService.add(...Object.values(userData));
-		await BrandService.add(...Object.values(brandData));
+		await UserService.add(...Object.values(usersData[0]));
+		await BrandService.bulkAdd(brandsData);
 		await CategoryService.add('perfumes');
 		await ProductService.bulkAdd(productsData);
 	});
@@ -176,8 +56,8 @@ describe('Order service', () => {
 	});
 
 	it('The "findOne" method return the order that corresponds to the indicated id', async () => {
-		const purchaseCreated = await OrderService.add(...Object.values(ordersData[0]));
-		const order = await OrderService.findOne(purchaseCreated.id);
+		const orderCreated = await OrderService.add(...Object.values(ordersData[0]));
+		const order = await OrderService.findOne(orderCreated.id);
 
 		expect(typeof order).toBe('object');
 		expect(Object.keys(order).sort()).toEqual(['id', 'userId','orderDate', 'statusChangeDate', 'status', 'details', 'address'].sort());
@@ -263,7 +143,7 @@ describe('Order service', () => {
 			]
 		});
 
-		expect(typeof order).toBe('object');
+		expect(order).toBeTruthy();
 		expect(Object.keys(order).sort()).toEqual(['id', 'userId','orderDate', 'statusChangeDate', 'status', 'details', 'address'].sort());
 		expect(orderCreated.status).toBe('pending');
 		expect(order.status).toBe('dispatched');

@@ -13,20 +13,8 @@ const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js')
 //Services
 const BrandService = require(path.resolve(process.cwd(), 'src', 'services', 'brand.service.js'));
 
-const brandsData = [
-	{
-		name: "DIOR",
-		logoUrl: "http://diorlogo.png",
-	},
-	{
-		name: "CHANEL",
-		logoUrl: "http://chanellogo.png",
-	},
-	{
-		name: "YVES SAINT LAURENT",
-		logoUrl: "http://ivessaintlaurentlogo.png",
-	},
-];
+//Data
+const { brandsData } = require('../testData');
 
 
 describe('Brand service', () => {

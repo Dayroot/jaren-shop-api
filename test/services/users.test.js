@@ -12,22 +12,8 @@ const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js')
 //Service
 const UserService = require(path.resolve(process.cwd(), 'src', 'services', 'user.service.js'));
 
-const usersData = [
-	{
-		firstName: 'Juanito',
-		lastName: 'Perez',
-		email: 'juenito@gmail.com',
-		password: '12345',
-	},
-	{
-		firstName: 'Carlos',
-		lastName: 'Carrillo',
-		email: 'carlos@gmail.com',
-		password: '54321',
-	},
-]
-
-
+// Testing data
+const { usersData } = require('../testData');
 
 describe('User service', () => {
 

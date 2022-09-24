@@ -9,33 +9,11 @@ dotenv.config (
 const migration = require(path.resolve(process.cwd(), 'src', 'db', 'modelAssociations.js'));
 const conn = require(path.resolve(process.cwd(), 'src', 'db', 'connectionDB.js'));
 
-//Models
-const DiscountModel = require(path.resolve(process.cwd(), 'src', 'db', 'models', 'discount.model.js'));
-
 //Services
 const DiscountService = require(path.resolve(process.cwd(), 'src', 'services', 'discount.service.js'));
 
 // Testing data
-const discountsData = [
-	{
-		value: 30,
-		startDate: "2021-07-02T16:17:01.559Z",
-		finishDate: "2022-09-02T16:17:01.559Z",
-		isEnabled: true,
-	},
-	{
-		value: 40,
-		startDate: "2021-07-02T16:17:01.559Z",
-		finishDate: "2022-09-02T16:17:01.559Z",
-		isEnabled: true,
-	},
-	{
-		value: 60,
-		startDate: "2021-07-02T16:17:01.559Z",
-		finishDate: "2022-09-02T16:17:01.559Z",
-		isEnabled: true,
-	}
-];
+const { discountsData } = require('../testData');
 
 
 describe('Discount service', () => {

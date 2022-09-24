@@ -17,142 +17,17 @@ const ReviewService = require(path.resolve(process.cwd(), 'src', 'services', 're
 const CategoryService = require(path.resolve(process.cwd(), 'src', 'services', 'category.service.js'));
 const OderService = require(path.resolve(process.cwd(), 'src', 'services', 'order.service.js'));
 
-const usersData = [
-	{
-		firstName: 'Juanito',
-		lastName: 'Perez',
-		email: 'juenito@gmail.com',
-		password: '12345',
-	},
-	{
-		firstName: 'Carlos',
-		lastName: 'Carrillo',
-		email: 'carlos@gmail.com',
-		password: '54321',
-	},
-]
-
-const productData = {
-	brandId: 1,
-	name: "Sauvage",
-	description: "The strong gust of Citrus in Sauvage Eau de Toilette is powerfully.",
-	images: [{url:"http://suavage1.png"}, {url:"http://suavage2.png"}, {url:"http://suavage3.png"}],
-	gender: 'men',
-	variants: [
-		{size:"30", price: 350.01, SKU:"DIO-SAU-30", UPC:"145836584321", stock: 10},
-		{size:"60", price: 450.01, SKU:"DIO-SAU-60", UPC:"145836584322", stock: 18},
-		{size:"100", price: 649.99, SKU:"DIO-SAU-100", UPC:"145836584323", stock: 12}
-	],
-	categoryId: 1,
-}
-
-const ordersData = [
-	{
-		userId: 1,
-		address: {
-			state: 'Norte de santander',
-			city: 'Cucuta',
-			streetAddress: 'avenida 1a #85d barrio Caobos',
-			postalCode: '530001',
-			propertyType: 'house',
-			phoneNumber: '3164578632',
-			fullname: 'Helena Blade',
-		},
-		status: 'pending',
-		details: [
-			{
-				productId: 1,
-				SKU: "DIO-SAU-30",
-				price: 350.01,
-				quantity: 1,
-				overview: 'perfume for men Sauvage 30ml brand DIOR',
-			},
-			{
-				productId: 1,
-				SKU: "DIO-SAU-60",
-				price: 350.01,
-				quantity: 1,
-				overview: 'perfume for men Sauvage 30ml brand DIOR',
-			},
-			{
-				productId: 1,
-				SKU: "DIO-SAU-100",
-				price: 350.01,
-				quantity: 1,
-				overview: 'perfume for men Sauvage 30ml brand DIOR',
-			},
-		],
-	},
-	{
-		userId: 1,
-		address: {
-			state: 'Norte de santander',
-			city: 'Cucuta',
-			streetAddress: 'avenida 1a #85d barrio Caobos',
-			postalCode: '530001',
-			propertyType: 'house',
-			phoneNumber: '3164578632',
-			fullname: 'Helena Blade',
-		},
-		status: 'pending',
-		details: [
-			{
-				productId: 1,
-				SKU: "DIO-SAU-30",
-				price: 350.01,
-				quantity: 1,
-				overview: 'perfume for men Sauvage 30ml brand DIOR',
-			},
-			{
-				productId: 1,
-				SKU: "DIO-SAU-60",
-				price: 350.01,
-				quantity: 1,
-				overview: 'perfume for men Sauvage 30ml brand DIOR',
-			},
-		],
-	},
-];
-
-
-const brandData = {
-	name: "DIOR",
-	logoUrl: "http://diorlogo.png",
-}
-
-const reviewsData = [
-	{
-		productId: 1,
-		userId: 1,
-		ref: 1,
-		rating: 5,
-		text: "This products is good",
-	},
-	{
-		productId: 1,
-		userId: 2,
-		ref: 2,
-		rating: 3,
-		text: "This products is regular",
-	},
-	{
-		productId: 1,
-		userId: 1,
-		ref: 3,
-		rating: 1,
-		text: "This products is bad",
-	},
-]
-
+// Testing data
+const { usersData, productsData, brandsData, reviewsData, ordersData } = require('../testData');
 
 describe('Review service', () => {
 
 	beforeEach( async () => {
 		await migration();
 		await UserService.bulkAdd(usersData);
-		await BrandService.add(...Object.values(brandData));
+		await BrandService.bulkAdd(brandsData);
 		await CategoryService.add("perfumes");
-		await ProductService.add(...Object.values(productData));
+		await ProductService.bulkAdd(productsData);
 		await OderService.bulkAdd(ordersData);
 	});
 
@@ -191,8 +66,8 @@ describe('Review service', () => {
 			expect(Object.keys(review).sort()).toEqual(['id', 'productId', 'user', 'ref', 'rating', 'text', 'createdAt', 'updatedAt'].sort());
 			expect(review.productId).toBe(reviewsData[i].productId);
 			expect(review.user.id).toBe(reviewsData[i].userId);
-			expect(review.rating).toBe(reviewsData[i].rating);
-			expect(review.text).toBe(reviewsData[i].text);
+			expect(review.rating).toEqual(expect.any(Number));
+			expect(review.text).toEqual(expect.any(String));
 		});
 	});
 
