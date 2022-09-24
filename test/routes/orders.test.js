@@ -14,7 +14,7 @@ const app = require('./testServer');
 const agent = session(app);
 
 //Test data
-const { ordersData, ordersData2, usersData, productsData, brandsData } = require('../testData');
+const {  ordersData, usersData, productsData, brandsData } = require('../testData');
 
 //Services
 const UserService = require(path.resolve(process.cwd(), 'src', 'services', 'user.service.js'));
@@ -42,13 +42,13 @@ describe('Orders Endpoints', () => {
 		it('Respond with a status code of 201', () =>
 			agent
 				.post("/api/v1/orders")
-				.send(ordersData2[0])
+				.send(ordersData[0])
 				.expect(201)
 		);
 		it('Responds with the order data', () =>
 			agent
 				.post("/api/v1/orders")
-				.send(ordersData2[0])
+				.send(ordersData[0])
 				.then( res => {
 					expect(Object.keys(res.body)).toEqual(['error', 'body']);
 					const order =  res.body.body;
@@ -82,7 +82,7 @@ describe('Orders Endpoints', () => {
 	describe('GET /user/:userId', () => {
 
 		beforeEach( async () => {
-			await OrderService.bulkAdd(ordersData2);
+			await OrderService.bulkAdd(ordersData);
 		});
 
 		it('Respond with a status code of 200', () =>
@@ -100,7 +100,7 @@ describe('Orders Endpoints', () => {
 					expect(res.body.body.length).toBe(2);
 
 					res.body.body.forEach( (order) => {
-						expect(order).toEqual(expect.any(Object));
+						expect(order).toBeTruthy();
 						expect(Object.keys(order).sort()).toEqual(['id', 'userId','orderDate', 'statusChangeDate', 'status', 'details', 'address'].sort());
 						expect(order.id).toEqual(expect.any(Number));
 						expect(order.userId).toEqual(expect.any(Number));
@@ -129,7 +129,7 @@ describe('Orders Endpoints', () => {
 
 	describe('GET /:id', () => {
 		beforeEach( async () => {
-			await OrderService.add(...Object.values(ordersData2[0]));
+			await OrderService.add(...Object.values(ordersData[0]));
 		});
 		it('Respond with a status code of 200', () =>
 			agent
@@ -142,7 +142,7 @@ describe('Orders Endpoints', () => {
 				.then( res => {
 					expect(Object.keys(res.body)).toEqual(['error', 'body']);
 					const order =  res.body.body;
-					expect(order).toEqual(expect.any(Object));
+					expect(order).toBeTruthy();
 					expect(Object.keys(order).sort()).toEqual(['id', 'userId','orderDate', 'statusChangeDate', 'status', 'details', 'address'].sort());
 					expect(order.id).toEqual(expect.any(Number));
 					expect(order.userId).toEqual(expect.any(Number));
@@ -181,7 +181,7 @@ describe('Orders Endpoints', () => {
 
 	describe('PATCH /:id', () => {
 		beforeEach( async () => {
-			await OrderService.add(...Object.values(ordersData2[0]));
+			await OrderService.add(...Object.values(ordersData[0]));
 		});
 		it('Respond with a status code of 200', () =>
 			agent
@@ -200,7 +200,7 @@ describe('Orders Endpoints', () => {
 				.then( res => {
 					expect(Object.keys(res.body)).toEqual(['error', 'body']);
 					const order =  res.body.body;
-					expect(order).toEqual(expect.any(Object));
+					expect(order).toBeTruthy();
 					expect(Object.keys(order).sort()).toEqual(['id', 'userId','orderDate', 'statusChangeDate', 'status', 'details', 'address'].sort());
 					expect(order.id).toEqual(expect.any(Number));
 					expect(order.userId).toEqual(expect.any(Number));
@@ -209,6 +209,38 @@ describe('Orders Endpoints', () => {
 					expect(order.status).toBe('delivered');
 					expect(Array.isArray(order.details)).toBeTruthy();
 					expect(Object.keys(order.details[0]).sort()).toEqual(['productId', 'ref',  'quantity', 'price', 'SKU', 'overview', 'image'].sort());
+					expect(order.address).toEqual(expect.any(Object));
+					expect(Object.keys(order.address).sort()).toEqual(['addressId', 'state', 'city', 'streetAddress', 'postalCode', 'propertyType', 'phoneNumber', 'fullname'].sort());
+				})
+		);
+
+		it('Update the order that correspond the id indicated and responds with the order data', () =>
+			agent
+				.patch("/api/v1/orders/1")
+				.send({
+					status: "delivered",
+					details: [
+						{
+							ref: 1,
+							quantity: 82,
+						}
+					]
+				})
+				.then( res => {
+					expect(Object.keys(res.body)).toEqual(['error', 'body']);
+					const order =  res.body.body;
+					expect(res.body.error).toBeNull();
+					expect(order).toBeTruthy();
+					expect(Object.keys(order).sort()).toEqual(['id', 'userId','orderDate', 'statusChangeDate', 'status', 'details', 'address'].sort());
+					expect(order.id).toEqual(expect.any(Number));
+					expect(order.userId).toEqual(expect.any(Number));
+					expect(order.orderDate).toEqual(expect.any(String));
+					expect(order.statusChangeDate).toEqual(expect.any(String));
+					expect(order.status).toBe('delivered');
+					expect(Array.isArray(order.details)).toBeTruthy();
+					expect(Object.keys(order.details[0]).sort()).toEqual(['productId', 'ref',  'quantity', 'price', 'SKU', 'overview', 'image'].sort());
+					const detail = order.details.find(detail => detail.ref === 1);
+					expect(detail.quantity).toBe(82);
 					expect(order.address).toEqual(expect.any(Object));
 					expect(Object.keys(order.address).sort()).toEqual(['addressId', 'state', 'city', 'streetAddress', 'postalCode', 'propertyType', 'phoneNumber', 'fullname'].sort());
 				})
@@ -245,7 +277,7 @@ describe('Orders Endpoints', () => {
 
 	describe('DELETE /:id', () => {
 		beforeEach( async () => {
-			await OrderService.add(...Object.values(ordersData2[0]));
+			await OrderService.add(...Object.values(ordersData[0]));
 		});
 		it('Respond with a status code of 200', () =>
 			agent
