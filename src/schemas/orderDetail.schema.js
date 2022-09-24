@@ -20,6 +20,7 @@ const updateDetailSchema = Joi.object({
 	SKU,
 	price,
 	quantity,
+	overview,
 });
 
 const getDetailSchema = Joi.object({
