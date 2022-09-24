@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { createAddressSchema } = require('./address.schema');
+const { createOrderAddressSchema } = require('./address.schema');
 const { createDetailSchema } = require('./orderDetail.schema');
 
 const id = Joi.number().integer();
@@ -9,7 +9,7 @@ const details = Joi.array().items( createDetailSchema );
 
 const createOrderSchema = Joi.object({
 	userId: userId.required(),
-	address: createAddressSchema.required(),
+	address: createOrderAddressSchema.required(),
 	status: status.required(),
 	details: details.required(),
 });
@@ -17,7 +17,7 @@ const createOrderSchema = Joi.object({
 const updateOrderSchema = Joi.object({
 	id: id.required(),
 	userId,
-	address: createAddressSchema.forbidden(),
+	address: createOrderAddressSchema.forbidden(),
 	status,
 	details,
 });

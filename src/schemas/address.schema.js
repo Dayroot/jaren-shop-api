@@ -10,9 +10,7 @@ const propertyType = Joi.string().valid('apartment', 'house');
 const phoneNumber = Joi.string().pattern(/^[0-9]+$/);
 const fullname = Joi.string();
 
-
-const createAddressSchema = Joi.object({
-	userId: userId.required(),
+const objectCreate = {
 	state: state.required(),
 	city: city.required(),
 	streetAddress: streetAddress.required(),
@@ -20,6 +18,15 @@ const createAddressSchema = Joi.object({
 	propertyType: propertyType.required(),
 	phoneNumber: phoneNumber.required(),
 	fullname: fullname.required(),
+}
+
+const createAddressSchema = Joi.object({
+	userId: userId.required(),
+	...objectCreate,
+});
+
+const createOrderAddressSchema = Joi.object({
+	...objectCreate,
 });
 
 const updateAddressSchema = Joi.object({
@@ -45,6 +52,7 @@ const getAddressByUserSchema = Joi.object({
 
 module.exports = {
 	createAddressSchema,
+	createOrderAddressSchema,
 	updateAddressSchema,
 	getAddressSchema,
 	getAddressByUserSchema,
