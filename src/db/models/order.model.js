@@ -1,11 +1,34 @@
-const {DataTypes, Op} = require('sequelize');
+const {DataTypes, Op, Model} = require('sequelize');
 const conn = require('../connectionDB');
+const boom = require('@hapi/boom');
 
 //Models
 const Product = require('./product.model');
 const ProductImage = require('./productImage.model');
 const OrderDetail = require('./orderDetail.model');
 const OrderAddress = require('./OrderAddress.model');
+
+//Utils
+const overviewCreator = require('../../utils/overviewCreator');
+
+//Service
+const ProductService = require('../../services/product.service');
+
+const setOverview = async ( data ) => {
+	const {details} = data.dataValues
+	let productsId = details.map( detail => detail.dataValues.productId );
+	productsId = Array.from(new Set(productsId));
+	const products = await ProductService.find({id: productsId});
+	details.forEach(detail => {
+		products.forEach( product => {
+			const variant = product.variants.find( variant => variant.SKU === detail.dataValues.SKU);
+			if(!variant) return;
+			const {category: {name: category}, brand:{name:brand}, name: productName, gender } = product;
+			const { size } = variant;
+			detail.dataValues.overview = overviewCreator({category, brand, productName, size, gender});
+		})
+	});
+};
 
 const Order = conn.define( 'order', {
 	status: {
@@ -54,6 +77,7 @@ const Order = conn.define( 'order', {
 	},
 	hooks: {
 		afterFind: async (instances) => {
+			if(!instances) return;
 			if(!Array.isArray(instances)){
 				instances = [instances];
 			}
@@ -63,7 +87,19 @@ const Order = conn.define( 'order', {
 					delete detail.dataValues.product;
 				})
 			});
-		}
+		},
+		beforeCreate: async(data) => {
+			if(!data.dataValues.details) return;
+			await setOverview(data);
+		},
+		beforeBulkCreate: async (dataArray) => {
+			const includeDetails = dataArray.every(data => !!data.dataValues.details);
+			if(!includeDetails) return;
+			const promises = dataArray.map( async (data) => {
+				return await setOverview(data);
+			});
+			await Promise.all(promises);
+		},
 	}
 });
 
