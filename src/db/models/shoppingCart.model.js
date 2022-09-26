@@ -54,12 +54,13 @@ const ShoppingCart = conn.define('shoppingCart', {}, {
 	},
 	hooks: {
 		afterFind: async (instances) => {
+			if(!instances) return;
 			if(!Array.isArray(instances)) {
 				instances = [instances];
 			}
 
 			instances.forEach( cart => {
-				cart.dataValues.items.forEach( itemData => {
+				cart.dataValues.items?.forEach( itemData => {
 					const item = itemData.dataValues;
 					const product = item.product.dataValues;
 					const category = product.category.dataValues.name;
