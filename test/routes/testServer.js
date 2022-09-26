@@ -14,9 +14,7 @@ routes(app);
 const mode = process.env.MODE;
 
 //Error handlers
-// if(mode === 'DEVELOPMENT' || mode === 'TEST') {
-// 	app.use(logErrors)
-// };
+//app.use(logErrors);
 app.use(boomErrorHandler);
 app.use(errorHandler);
 
