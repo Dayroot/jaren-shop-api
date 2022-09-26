@@ -54,12 +54,13 @@ const WishList = conn.define('wishList', {}, {
 	},
 	hooks: {
 		afterFind: async (instances) => {
+			if(!instances) return;
 			if(!Array.isArray(instances)) {
 				instances = [instances];
 			}
 
 			instances.forEach( wishList => {
-				wishList.dataValues.items.forEach( itemData => {
+				wishList.dataValues.items?.forEach( itemData => {
 					const item = itemData.dataValues;
 					const product = item.product.dataValues;
 					const category = product.category.dataValues.name;
