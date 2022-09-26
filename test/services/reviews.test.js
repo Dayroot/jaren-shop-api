@@ -15,7 +15,7 @@ const BrandService = require(path.resolve(process.cwd(), 'src', 'services', 'bra
 const ProductService = require(path.resolve(process.cwd(), 'src', 'services', 'product.service.js'));
 const ReviewService = require(path.resolve(process.cwd(), 'src', 'services', 'review.service.js'));
 const CategoryService = require(path.resolve(process.cwd(), 'src', 'services', 'category.service.js'));
-const OderService = require(path.resolve(process.cwd(), 'src', 'services', 'order.service.js'));
+const OrderService = require(path.resolve(process.cwd(), 'src', 'services', 'order.service.js'));
 
 // Testing data
 const { usersData, productsData, brandsData, reviewsData, ordersData } = require('../testData');
@@ -28,7 +28,7 @@ describe('Review service', () => {
 		await BrandService.bulkAdd(brandsData);
 		await CategoryService.add("perfumes");
 		await ProductService.bulkAdd(productsData);
-		await OderService.bulkAdd(ordersData);
+		await OrderService.bulkAdd(ordersData);
 	});
 
 	afterAll( async () => {
