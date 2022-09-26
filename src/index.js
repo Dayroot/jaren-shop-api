@@ -1,15 +1,28 @@
 const express = require('express');
 const morgan = require('morgan');
+const cors = require('cors');
 const routes = require('./routes');
 const {logErrors, errorHandler, boomErrorHandler} = require('./middlewares/error.handler');
+
+//Execution mode
+const mode = process.env.MODE;
 
 const app = express();
 
 //Middlewares
 app.use(express.json());
 
-//Execution mode
-const mode = process.env.MODE;
+//Cors
+const whiteList = ['http://localhost:8080'];
+const options = {
+	origin: (origin, callback) => {
+		if(origin && !whiteList.includes(origin)){
+			return callback(new Error('Access denied'));
+		}
+		callback(null, true);
+	}
+}
+app.use(cors(options));
 
 if(mode === 'DEVELOPMENT' || mode === 'TEST') {
 	app.use(morgan('tiny'));
